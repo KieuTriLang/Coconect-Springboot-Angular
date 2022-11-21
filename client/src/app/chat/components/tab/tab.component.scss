@@ -1,0 +1,27 @@
+@use "src/variable" as *;
+.tab-container {
+  height: 100%;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    width: 2.5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($color-1, 1);
+  }
+  & .tab-item {
+    font-size: 1.8rem;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    &.active {
+      background: rgba($color-1, 1);
+      color: rgba($color-white, 1);
+    }
+    &:hover {
+      background: rgba($color-1, 1);
+      color: rgba($color-white, 1);
+    }
+  }
+}
