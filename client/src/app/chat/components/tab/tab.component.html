@@ -1,38 +1,10 @@
 <div class="tab-container">
-  <div class="tab-item">
-    <p>Public room</p>
-  </div>
-  <div class="tab-item">
-    <p>Public room</p>
-  </div>
-  <div class="tab-item">
-    <p>Public room</p>
-  </div>
-  <div class="tab-item">
-    <p>Public room</p>
-  </div>
-  <div class="tab-item">
-    <p>Public room</p>
-  </div>
-  <div class="tab-item">
-    <p>Public room</p>
-  </div>
-  <div class="tab-item">
-    <p>Public room</p>
-  </div>
-  <div class="tab-item">
-    <p>Public room</p>
-  </div>
-  <div class="tab-item">
-    <p>Public room</p>
-  </div>
-  <div class="tab-item">
-    <p>Public room</p>
-  </div>
-  <div class="tab-item">
-    <p>Public room</p>
-  </div>
-  <div class="tab-item">
-    <p>Public room</p>
+  <div
+    class="tab-item"
+    *ngFor="let tab of tabs"
+    [class.active]="tab.identityCode == tabSelected"
+    (click)="selectTab(tab.identityCode)"
+  >
+    <p>{{ tab.name }}</p>
   </div>
 </div>
