@@ -9,8 +9,8 @@
       *ngFor="let userMess of conversations.get(this.tabSelected)"
       [userCode]="userCode"
       [userMess]="userMess"
-      (openChatByUser)="handleNewChat($event)"
+      (openChatByUser)="handleNewConversation($event)"
     ></app-chat-message>
   </div>
-  <app-chatbar></app-chatbar>
+  <app-chatbar [tabSelected]="tabSelected"></app-chatbar>
 </div>

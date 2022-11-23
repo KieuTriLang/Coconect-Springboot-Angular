@@ -1,3 +1,21 @@
 <div class="container">
-  <app-chat></app-chat>
+  <app-chat
+    *ngIf="chatService.userData.connected; else registerUser"
+  ></app-chat>
 </div>
+
+<ng-template #registerUser>
+  <div class="register">
+    <div class="title">
+      <h1>Welcome To Coconect</h1>
+    </div>
+    <div class="form">
+      <input
+        type="text"
+        [formControl]="username"
+        placeholder="Your name . . ."
+      />
+      <button type="submit" (click)="chatService.registerUser()">Enter</button>
+    </div>
+  </div>
+</ng-template>

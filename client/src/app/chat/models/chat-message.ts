@@ -1,9 +1,10 @@
 export class ChatMessage {
   constructor(
     public identityCode: string,
-    public username: string,
-    public receiverName: string,
-    public connected: boolean,
-    public message: string
+    public senderName: string,
+    public receiverCode: string,
+    public content: string,
+    public status: string,
+    public postedTime: string
   ) {}
 }
