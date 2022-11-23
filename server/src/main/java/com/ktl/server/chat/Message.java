@@ -10,10 +10,10 @@ import lombok.ToString;
 @Data
 @ToString
 public class Message {
-    private String indentityCode;
+    private String identityCode;
     private String senderName;
-    private String receiverName;
+    private String receiverCode;
     private String content;
-    private String date;
+    private String postedTime;
     private Status status;
 }
