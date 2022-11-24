@@ -5,6 +5,7 @@ import * as SockJS from 'sockjs-client';
 import { environment } from 'src/environments/environment';
 import { Client, Message, over } from 'stompjs';
 import { Subject } from 'rxjs';
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
