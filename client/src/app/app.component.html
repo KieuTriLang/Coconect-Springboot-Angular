@@ -9,13 +9,13 @@
     <div class="title">
       <h1>Welcome To Coconect</h1>
     </div>
-    <div class="form">
+    <form class="form" [formGroup]="form" (submit)="submit()">
       <input
         type="text"
-        [formControl]="username"
+        formControlName="username"
         placeholder="Your name . . ."
       />
-      <button type="submit" (click)="chatService.registerUser()">Enter</button>
-    </div>
+      <button type="submit">Enter</button>
+    </form>
   </div>
 </ng-template>

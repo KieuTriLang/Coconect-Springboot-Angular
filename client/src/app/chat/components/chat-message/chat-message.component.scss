@@ -14,7 +14,7 @@
     opacity: 1;
   }
   &::after {
-    width: fit-content;
+    width: max-content;
     position: absolute;
     content: attr(posted-time);
     bottom: 0;

@@ -26,7 +26,8 @@ export class ChatService {
   handleUserName(value: string) {
     this.userData = { ...this.userData, username: value };
   }
-  registerUser() {
+  registerUser(username: string) {
+    this.userData.username = username;
     this.connect();
   }
   connect = () => {
@@ -79,15 +80,15 @@ export class ChatService {
         status: 'MESSAGE',
         postedTime: new Date().toISOString(),
       };
-      console.log(chatMessage);
       if (receiverCode == 'public') {
         this.stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
       } else {
         this.stompClient.send(
-          '/app/private-message',
+          '/app/message-private',
           {},
           JSON.stringify(chatMessage)
         );
+        this.newMessage.next(chatMessage);
       }
     }
   }

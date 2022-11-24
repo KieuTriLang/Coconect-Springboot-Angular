@@ -1,4 +1,9 @@
-import { FormGroup, FormControl } from '@angular/forms';
+import {
+  FormGroup,
+  FormControl,
+  FormBuilder,
+  Validators,
+} from '@angular/forms';
 import { ChatService } from './chat/services/chat.service';
 import { Component } from '@angular/core';
 import { Title } from '@angular/platform-browser';
@@ -10,10 +15,20 @@ import { Title } from '@angular/platform-browser';
 })
 export class AppComponent {
   username = new FormControl();
-  constructor(private titleService: Title, public chatService: ChatService) {
+  form!: FormGroup;
+  constructor(
+    private titleService: Title,
+    public chatService: ChatService,
+    private fb: FormBuilder
+  ) {
     this.titleService.setTitle('Coconect chat');
-    this.username.valueChanges.subscribe((value) => {
-      this.chatService.handleUserName(value);
+    this.form = this.fb.group({
+      username: ['', [Validators.required]],
     });
+  }
+  submit() {
+    if (this.form.valid) {
+      this.chatService.registerUser(this.form.value.username);
+    }
   }
 }

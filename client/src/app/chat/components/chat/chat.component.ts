@@ -23,7 +23,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   ];
   conversations = new Map<string, UserMess[]>();
   constructor(private chatService: ChatService) {
-    this.chatService.newMessage$.subscribe((message) => this.handleNewMessage);
+    this.chatService.newMessage$.subscribe((message) =>
+      this.handleNewMessage(message)
+    );
   }
 
   ngAfterViewChecked(): void {
@@ -32,56 +34,27 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   ngOnInit(): void {
     this.userCode = this.chatService.userData.identityCode;
-    this.conversations.set('public', [
-      // {
-      //   identityCode: 'lowefk',
-      //   username: 'David',
-      //   messages: [
-      //     'Lorem ipsum dolor sit Lorem, ipsum dolor sit amet consectetur adipisicing elit. Distinctio autem cum quisquam nesciunt minus, atque ducimus, ipsa veniam repellendus perferendis sunt illum. Consequatur ullam dolore recusandae explicabo consectetur vero inventore?',
-      //     'Lorem ipsum dolor sit Lorem, ipsum dolor sit amet consectetur adipisicing elit. Distinctio autem cum quisquam nesciunt minus, atque ducimus, ipsa veniam repellendus perferendis sunt illum. Consequatur ullam dolore recusandae explicabo consectetur vero inventore?',
-      //   ],
-      //   postedTime: '1:30PM',
-      // },
-      // {
-      //   identityCode: 'me',
-      //   username: 'Lang',
-      //   messages: [
-      //     'Lorem ipsum dolor sit Lorem, ipsum dolor sit amet consectetur adipisicing elit. Distinctio autem cum quisquam nesciunt minus, atque ducimus, ipsa veniam repellendus perferendis sunt illum. Consequatur ullam dolore recusandae explicabo consectetur vero inventore?',
-      //     'Lorem ipsum dolor sit Lorem, ipsum dolor sit amet consectetur adipisicing elit. Distinctio autem cum quisquam nesciunt minus, atque ducimus, ipsa veniam repellendus perferendis sunt illum. Consequatur ullam dolore recusandae explicabo consectetur vero inventore?',
-      //   ],
-      //   postedTime: '1:30PM',
-      // },
-      // {
-      //   identityCode: 'kiet',
-      //   username: 'Kiet',
-      //   messages: [
-      //     'Lorem ipsum dolor ore?',
-      //     'Lorem ipsum dolor sit Lorem, ipsum dolor sit amet consectetur adipisicing elit. Distinctio autem cum quisquam nesciunt minus, atque ducimus, ipsa veniam repellendus perferendis sunt illum. Consequatur ullam dolore recusandae explicabo consectetur vero inventore?',
-      //   ],
-      //   postedTime: '1:30PM',
-      // },
-      // {
-      //   identityCode: 'duy',
-      //   username: 'dong phuong bat bai',
-      //   messages: ['Lorem ipsum dolor ore?'],
-      //   postedTime: '1:30PM',
-      // },
-    ]);
+    this.conversations.set('public', []);
   }
   handleNewMessage = (message: ChatMessage) => {
     if (message.receiverCode == 'public') {
-      var publicConversation: UserMess[] =
-        this.conversations.get('public') || [];
-      if (publicConversation.length > 0) {
-        var length = publicConversation.length;
-        if (
-          publicConversation[length - 1].identityCode == message.identityCode
-        ) {
-          publicConversation[length - 1].messages = [
-            ...publicConversation[length - 1].messages,
-            message.content,
-          ];
-        }
+      this.handlePublicMess(message);
+    } else {
+      this.handlePrivateMess(message);
+    }
+  };
+
+  handlePublicMess(message: ChatMessage) {
+    var publicConversation: UserMess[] = this.conversations.get('public') || [];
+    var lengthCon = publicConversation.length;
+    if (lengthCon > 0) {
+      if (
+        publicConversation[lengthCon - 1].identityCode == message.identityCode
+      ) {
+        publicConversation[lengthCon - 1].messages = [
+          ...publicConversation[lengthCon - 1].messages,
+          message.content,
+        ];
       } else {
         var userMess: UserMess = {
           identityCode: message.identityCode,
@@ -91,20 +64,33 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         };
         publicConversation = [...publicConversation, userMess];
       }
-      this.conversations.set('public', publicConversation);
     } else {
-      var privateConversation: UserMess[] =
-        this.conversations.get(message.receiverCode) || [];
-      if (privateConversation) {
-        var length = privateConversation.length;
-        if (
-          privateConversation[length - 1].identityCode == message.identityCode
-        ) {
-          privateConversation[length - 1].messages = [
-            ...privateConversation[length - 1].messages,
-            message.content,
-          ];
-        }
+      var userMess: UserMess = {
+        identityCode: message.identityCode,
+        username: message.senderName,
+        messages: [message.content],
+        postedTime: message.postedTime,
+      };
+      publicConversation = [...publicConversation, userMess];
+    }
+    this.conversations.set('public', publicConversation);
+  }
+  handlePrivateMess(message: ChatMessage) {
+    var conversationCode =
+      message.identityCode == this.chatService.userData.identityCode
+        ? message.receiverCode
+        : message.identityCode;
+    var privateConversation: UserMess[] =
+      this.conversations.get(conversationCode) || [];
+    var lengthCon = privateConversation.length;
+    if (lengthCon > 0) {
+      if (
+        privateConversation[lengthCon - 1].identityCode == message.identityCode
+      ) {
+        privateConversation[lengthCon - 1].messages = [
+          ...privateConversation[lengthCon - 1].messages,
+          message.content,
+        ];
       } else {
         var userMess: UserMess = {
           identityCode: message.identityCode,
@@ -112,15 +98,30 @@ export class ChatComponent implements OnInit, AfterViewChecked {
           messages: [message.content],
           postedTime: message.postedTime,
         };
-        privateConversation = [userMess];
+        privateConversation = [...privateConversation, userMess];
+      }
+    } else {
+      var userMess: UserMess = {
+        identityCode: message.identityCode,
+        username: message.senderName,
+        messages: [message.content],
+        postedTime: message.postedTime,
+      };
+      privateConversation = [userMess];
+      if (
+        this.tabs.filter((value) => value.identityCode == message.identityCode)
+          .length == 0 &&
+        message.identityCode != this.chatService.userData.identityCode
+      ) {
         this.tabs = [
           ...this.tabs,
           { identityCode: message.identityCode, name: message.senderName },
         ];
-        this.conversations.set(message.receiverCode, privateConversation);
       }
     }
-  };
+    this.conversations.set(conversationCode, privateConversation);
+    console.log(this.conversations);
+  }
   scrollToBottom() {
     try {
       this.messC.nativeElement.scrollTop =

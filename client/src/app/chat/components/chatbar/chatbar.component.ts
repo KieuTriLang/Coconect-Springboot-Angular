@@ -20,7 +20,7 @@ export class ChatbarComponent implements OnInit {
 
   submit() {
     if (this.form.valid) {
-      console.log(this.form.value);
+      this.chatService.sendMessage(this.tabSelected, this.form.value.message);
       this.form.reset();
     }
   }
