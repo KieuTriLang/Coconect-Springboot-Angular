@@ -5,6 +5,9 @@
     [class.active]="tab.identityCode == tabSelected"
     (click)="selectTab(tab.identityCode)"
   >
-    <p>{{ tab.name }}</p>
+    {{ tab.name }}
+    <span class="unread" *ngIf="tab.numberUnread > 0">
+      {{tab.numberUnread}}
+    </span>
   </div>
 </div>

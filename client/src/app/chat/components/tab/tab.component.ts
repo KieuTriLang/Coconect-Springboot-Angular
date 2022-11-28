@@ -1,3 +1,4 @@
+import { TabConversation } from './../../models/tab-conversation';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
@@ -7,7 +8,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 })
 export class TabComponent implements OnInit {
   @Input() tabSelected: string = '';
-  @Input() tabs: { name: string; identityCode: string }[] = [];
+  @Input() tabs: TabConversation[] = [];
   @Output() tabSelectedChange: EventEmitter<string> =
     new EventEmitter<string>();
   constructor() {}

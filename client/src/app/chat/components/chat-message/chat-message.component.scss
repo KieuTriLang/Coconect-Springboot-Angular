@@ -36,15 +36,59 @@
     font-weight: 700;
     cursor: pointer;
   }
+
   & .content {
     height: 100%;
     text-align: left;
-    & p {
+    & .text {
       padding: 2.5px 5px;
       background: rgba($color-8, 0.5);
       border-radius: 5px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
       &:not(:last-of-type) {
         margin-bottom: 2.5px;
+      }
+      & a.message-link {
+        font-size: 1.2rem;
+        color: $color-black;
+      }
+      & .message-color {
+        position: relative;
+        width: 20px;
+        aspect-ratio: 1;
+        border-radius: 5px;
+        cursor: pointer;
+        &[m-title]::after {
+          content: attr(m-title);
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          padding: 5px;
+          white-space: nowrap;
+          font-size: 0.75rem;
+          border-radius: 5px;
+          background-color: $color-4;
+          box-shadow: 0 0 1px $color-5;
+          translate: -50% -50%;
+          z-index: -1;
+          opacity: 0;
+          transition: all cubic-bezier(0.47, 0, 0.745, 0.715) 0.3s;
+        }
+        &[m-title]:hover::after {
+          translate: -50% 30%;
+          z-index: 99;
+          opacity: 1;
+        }
+        &::before {
+          position: absolute;
+          inset: 0 0 0 0;
+          content: "";
+          border-radius: 5px;
+          background: $color-white;
+          z-index: -1;
+        }
       }
     }
   }
@@ -61,6 +105,9 @@
     }
     & .content {
       text-align: right;
+      & .text {
+        justify-content: end;
+      }
     }
   }
 }

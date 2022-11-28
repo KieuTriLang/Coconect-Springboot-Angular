@@ -8,8 +8,10 @@
     <p>{{ userMess.username }}</p>
   </div>
   <div class="content">
-    <p *ngFor="let message of userMess.messages">
-      {{ message }}
-    </p>
+    <div
+      class="text"
+      *ngFor="let message of userMess.messages"
+      [innerHtml]="message | safeHtml"
+    ></div>
   </div>
 </div>

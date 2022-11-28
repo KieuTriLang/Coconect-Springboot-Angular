@@ -1,3 +1,4 @@
+import { TabConversation } from './../../models/tab-conversation';
 import { ChatMessage } from './../../models/chat-message';
 import { ChatService } from './../../services/chat.service';
 import {
@@ -18,8 +19,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   @ViewChild('messageContainer') messC!: ElementRef;
   userCode = 'me';
   tabSelected: string = 'public';
-  tabs: { identityCode: string; name: string }[] = [
-    { name: 'Public room', identityCode: 'public' },
+  tabs: TabConversation[] = [
+    { name: 'Public room', identityCode: 'public', numberUnread: 0 },
   ];
   conversations = new Map<string, UserMess[]>();
   constructor(private chatService: ChatService) {
@@ -73,6 +74,14 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       };
       publicConversation = [...publicConversation, userMess];
     }
+
+    if (message.receiverCode != this.tabSelected) {
+      this.tabs = this.tabs.map((tab: TabConversation) =>
+        tab.identityCode == message.receiverCode
+          ? { ...tab, numberUnread: tab.numberUnread + 1 }
+          : tab
+      );
+    }
     this.conversations.set('public', publicConversation);
   }
   handlePrivateMess(message: ChatMessage) {
@@ -100,6 +109,13 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         };
         privateConversation = [...privateConversation, userMess];
       }
+      if (conversationCode != this.tabSelected) {
+        this.tabs = this.tabs.map((tab: TabConversation) =>
+          tab.identityCode == conversationCode
+            ? { ...tab, numberUnread: tab.numberUnread + 1 }
+            : tab
+        );
+      }
     } else {
       var userMess: UserMess = {
         identityCode: message.identityCode,
@@ -115,12 +131,15 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       ) {
         this.tabs = [
           ...this.tabs,
-          { identityCode: message.identityCode, name: message.senderName },
+          {
+            identityCode: message.identityCode,
+            name: message.senderName,
+            numberUnread: 1,
+          },
         ];
       }
     }
     this.conversations.set(conversationCode, privateConversation);
-    console.log(this.conversations);
   }
   scrollToBottom() {
     try {
@@ -130,6 +149,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
   handleTabSelected(value: string) {
     this.tabSelected = value;
+    this.tabs = this.tabs.map((tab: TabConversation) =>
+      tab.identityCode == value ? { ...tab, numberUnread: 0 } : tab
+    );
   }
   handleNewConversation(value: { username: string; identityCode: string }) {
     if (
@@ -141,7 +163,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       this.tabSelected = value.identityCode;
       this.tabs = [
         ...this.tabs,
-        { name: value.username, identityCode: value.identityCode },
+        {
+          name: value.username,
+          identityCode: value.identityCode,
+          numberUnread: 0,
+        },
       ];
       this.conversations.set(value.identityCode, []);
     }

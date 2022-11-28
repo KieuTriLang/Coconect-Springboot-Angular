@@ -1,3 +1,4 @@
+import { MessageService } from './message.service';
 import { UserData } from './../models/user-data';
 import { ChatMessage } from './../models/chat-message';
 import { Injectable } from '@angular/core';
@@ -22,7 +23,7 @@ export class ChatService {
 
   newMessage = new Subject<ChatMessage>();
   newMessage$ = this.newMessage.asObservable();
-  constructor() {}
+  constructor(private messageService: MessageService) {}
 
   handleUserName(value: string) {
     this.userData = { ...this.userData, username: value };
@@ -32,9 +33,14 @@ export class ChatService {
     this.connect();
   }
   connect = () => {
-    let sock = new SockJS(`${this.baseUrl}/ws`);
+    let sock = new SockJS(`${this.baseUrl}/ws`, null, {});
     this.stompClient = over(sock);
-    this.stompClient.connect({}, this.onConnected, this.onError);
+    this.stompClient.connect(
+      // { 'ngrok-skip-browser-warning': 1606 },
+      {},
+      this.onConnected,
+      this.onError
+    );
   };
 
   onConnected = () => {
@@ -77,7 +83,7 @@ export class ChatService {
         identityCode: this.userData.identityCode,
         senderName: this.userData.username,
         receiverCode: receiverCode,
-        content: message,
+        content: this.messageService.transformMessage(message),
         status: 'MESSAGE',
         postedTime: new Date().toISOString(),
       };
