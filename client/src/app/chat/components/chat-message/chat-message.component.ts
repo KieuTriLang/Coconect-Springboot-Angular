@@ -36,7 +36,6 @@ export class ChatMessageComponent implements OnInit, AfterViewInit {
     event.preventDefault();
     const anchor = event.target as HTMLAnchorElement;
     copy(anchor.style.backgroundColor);
-    console.log(anchor.style.background);
   };
 
   ngOnInit(): void {}
