@@ -25,4 +25,10 @@ public class ChatController {
         simpMessagingTemplate.convertAndSendToUser(message.getReceiverCode(), "/private", message);
         return message;
     }
+
+    @MessageMapping("message-group")
+    public Message receiveGroupMessage(@Payload Message message) {
+        simpMessagingTemplate.convertAndSend(message.getReceiverCode(), message);
+        return message;
+    }
 }
