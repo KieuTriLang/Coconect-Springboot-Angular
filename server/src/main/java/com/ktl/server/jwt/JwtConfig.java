@@ -1,6 +1,7 @@
 package com.ktl.server.jwt;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 import com.google.common.net.HttpHeaders;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Configuration
 @ConfigurationProperties(prefix = "app.jwt")
 public class JwtConfig {
 

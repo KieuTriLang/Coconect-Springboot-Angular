@@ -7,9 +7,14 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import lombok.AllArgsConstructor;
+
 @Controller
+@AllArgsConstructor
 public class ChatController {
 
+    @Autowired
+    private final MessageService messageService;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
@@ -22,13 +27,16 @@ public class ChatController {
     @MessageMapping("/message-private")
     public Message receivePrivateMessage(@Payload Message message) {
 
-        simpMessagingTemplate.convertAndSendToUser(message.getReceiverCode(), "/private", message);
-        return message;
+        Message mess = messageService.saveMessage(message);
+        simpMessagingTemplate.convertAndSendToUser(mess.getReceiverCode(), "/private", mess);
+        return mess;
     }
 
-    @MessageMapping("message-group")
+    @MessageMapping("/message-room")
     public Message receiveGroupMessage(@Payload Message message) {
-        simpMessagingTemplate.convertAndSend(message.getReceiverCode(), message);
-        return message;
+        message.setToRoom(true);
+        Message mess = messageService.saveMessage(message);
+        simpMessagingTemplate.convertAndSend("/room/" + mess.getReceiverCode(), mess);
+        return mess;
     }
 }

@@ -1,8 +1,13 @@
 package com.ktl.server.user;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,27 +31,34 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("Not found username"));
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
-        return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(
-                String.format("Username %s not found", username)));
+        authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
+
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
+                authorities);
     }
 
     @Override
-    public void register(RegisterRequest registerRequest) throws Exception {
+    public void register(RegisterRequest registerRequest) {
         try {
             AppUser user = AppUser.builder()
                     .userCode(UUID.randomUUID().toString())
                     .username(registerRequest.getUsername())
                     .password(passwordEncoder.encode(registerRequest.getPassword()))
-                    .grantedAuthorities(USER.getGrantedAuthorities())
-                    .isAccountNonExpired(true)
-                    .isAccountNonLocked(true)
-                    .isCredentialsNonExpired(true)
-                    .isEnabled(true).build();
+                    .role(USER)
+                    .rooms(new LinkedHashSet<>()).build();
             userRepo.save(user);
         } catch (Exception ex) {
-            throw new Exception(ex);
+            throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public AppUser getInfoUserByUserCode(String userCode) {
+        // TODO Auto-generated method stub
+        return userRepo.findByUserCode(userCode).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
 }

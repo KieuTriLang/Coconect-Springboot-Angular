@@ -4,5 +4,7 @@ import com.ktl.server.home.RegisterRequest;
 
 public interface UserService {
 
-    void register(RegisterRequest registerRequest) throws Exception;
+    void register(RegisterRequest registerRequest);
+
+    AppUser getInfoUserByUserCode(String userCode);
 }

@@ -6,7 +6,6 @@ import * as SockJS from 'sockjs-client';
 import { environment } from 'src/environments/environment';
 import { Client, Message, over } from 'stompjs';
 import { Subject } from 'rxjs';
-import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -77,15 +76,17 @@ export class ChatService {
     this.newMessage.next(payloadData);
   };
 
-  sendMessage(receiverCode: string, message: string) {
+  sendMessage(receiverCode: string, message: string, toGroup: boolean) {
     if (this.stompClient) {
       var chatMessage: ChatMessage = {
+        id: null,
         identityCode: this.userData.identityCode,
         senderName: this.userData.username,
         receiverCode: receiverCode,
         content: this.messageService.transformMessage(message),
         status: 'MESSAGE',
         postedTime: new Date().toISOString(),
+        toGroup: toGroup,
       };
       if (receiverCode == 'public') {
         this.stompClient.send('/app/message', {}, JSON.stringify(chatMessage));

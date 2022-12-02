@@ -1,13 +1,17 @@
 package com.ktl.server.user;
 
-import java.util.Collection;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.ktl.server.room.Room;
+import com.ktl.server.security.AppUserRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,59 +23,17 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @Entity
-public class AppUser implements UserDetails {
+public class AppUser {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String userCode;
-    private Set<? extends GrantedAuthority> grantedAuthorities;
+    @Enumerated(EnumType.STRING)
+    private AppUserRole role;
     private String username;
     private String password;
-    private boolean isAccountNonExpired;
-    private boolean isAccountNonLocked;
-    private boolean isCredentialsNonExpired;
-    private boolean isEnabled;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // TODO Auto-generated method stub
-        return grantedAuthorities;
-    }
-
-    @Override
-    public String getPassword() {
-        // TODO Auto-generated method stub
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        // TODO Auto-generated method stub
-        return username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        // TODO Auto-generated method stub
-        return isAccountNonExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        // TODO Auto-generated method stub
-        return isAccountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        // TODO Auto-generated method stub
-        return isCredentialsNonExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        // TODO Auto-generated method stub
-        return isEnabled;
-    }
+    @ManyToMany
+    private Set<Room> rooms;
 
 }
