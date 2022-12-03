@@ -1,3 +1,4 @@
+import { AuthService } from './../../services/auth.service';
 import { TabConversation } from './../../models/tab-conversation';
 import { ChatMessage } from './../../models/chat-message';
 import { ChatService } from './../../services/chat.service';
@@ -23,7 +24,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     { name: 'Public room', identityCode: 'public', numberUnread: 0 },
   ];
   conversations = new Map<string, UserMess[]>();
-  constructor(private chatService: ChatService) {
+  constructor(
+    private chatService: ChatService,
+    private authService: AuthService
+  ) {
     this.chatService.newMessage$.subscribe((message) =>
       this.handleNewMessage(message)
     );
@@ -34,6 +38,18 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit(): void {
+    this.authService.getInfo().subscribe({
+      next: (res) => {
+        this.chatService.registerUser({
+          identityCode: res.userCode,
+          username: res.username,
+          connected: true,
+        });
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
     this.userCode = this.chatService.userData.identityCode;
     this.conversations.set('public', []);
   }

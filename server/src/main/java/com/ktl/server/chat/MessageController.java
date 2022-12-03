@@ -25,6 +25,9 @@ public class MessageController {
     @Autowired
     private final MessageService messageService;
 
+    @Autowired
+    private final AuthorizationHeaderHelper authorizationHeaderHelper;
+
     @GetMapping("/room/{roomCode}")
     public ResponseEntity<Object> getRoomConversation(@PathVariable String roomCode,
             @RequestParam(required = false) Long id) {
@@ -43,7 +46,7 @@ public class MessageController {
     public ResponseEntity<Object> getPrivateConversation(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @PathVariable String receiverCode,
             @RequestParam(required = false) Long id) {
-        String username = AuthorizationHeaderHelper.getSub(authorizationHeader);
+        String username = authorizationHeaderHelper.getSub(authorizationHeader);
         List<Message> messages = new ArrayList<>();
         if (id != null && id > 0) {
 

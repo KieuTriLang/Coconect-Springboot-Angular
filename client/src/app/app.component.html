@@ -1,21 +1,53 @@
 <div class="container">
-  <app-chat
-    *ngIf="chatService.userData.connected; else registerUser"
-  ></app-chat>
+  <app-chat *ngIf="authService.authenticated; else loginTemp"></app-chat>
 </div>
 
-<ng-template #registerUser>
-  <div class="register">
+<ng-template #loginTemp>
+  <div class="login">
     <div class="title">
       <h1>Welcome To Coconect</h1>
     </div>
-    <form class="form" [formGroup]="form" (submit)="submit()">
+    <form
+      class="form-login"
+      [formGroup]="loginForm"
+      (submit)="login()"
+      *ngIf="isLogin; else registerFormTemp"
+    >
       <input
         type="text"
         formControlName="username"
-        placeholder="Your name . . ."
+        placeholder="Username . . ."
       />
-      <button type="submit">Enter</button>
+      <input
+        type="password"
+        formControlName="password"
+        placeholder="Password . . ."
+      />
+      <button type="submit">Login</button>
     </form>
+    <button type="button" class="button-switch" (click)="isLogin = !isLogin">
+      {{isLogin ? "Register":"Login"}}
+    </button>
   </div>
+</ng-template>
+
+<ng-template #registerFormTemp>
+  <form class="form-register" [formGroup]="registerForm" (submit)="register()">
+    <input
+      type="text"
+      formControlName="username"
+      placeholder="Username . . ."
+    />
+    <input
+      type="password"
+      formControlName="password"
+      placeholder="Password . . ."
+    />
+    <input
+      type="password"
+      formControlName="rePassword"
+      placeholder="Re-Password . . ."
+    />
+    <button type="submit">Register</button>
+  </form>
 </ng-template>

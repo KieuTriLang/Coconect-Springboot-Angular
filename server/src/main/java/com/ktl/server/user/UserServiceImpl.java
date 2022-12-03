@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.UUID;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,6 +29,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private final ModelMapper modelMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -56,9 +60,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public AppUser getInfoUserByUserCode(String userCode) {
+    public AppUserDto getInfoUserByUserCode(String userCode) {
         // TODO Auto-generated method stub
-        return userRepo.findByUserCode(userCode).orElseThrow(() -> new RuntimeException("User not found"));
+        AppUser user = userRepo.findByUserCode(userCode).orElseThrow(() -> new RuntimeException("User not found"));
+        return modelMapper.map(user, AppUserDto.class);
+    }
+
+    @Override
+    public AppUserDto getInfoUserByUsername(String username) {
+        // TODO Auto-generated method stub
+        AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        user.getRooms();
+        return modelMapper.map(user, AppUserDto.class);
     }
 
 }

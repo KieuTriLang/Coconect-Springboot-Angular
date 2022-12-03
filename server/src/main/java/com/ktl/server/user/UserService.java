@@ -6,5 +6,7 @@ public interface UserService {
 
     void register(RegisterRequest registerRequest);
 
-    AppUser getInfoUserByUserCode(String userCode);
+    AppUserDto getInfoUserByUserCode(String userCode);
+
+    AppUserDto getInfoUserByUsername(String username);
 }

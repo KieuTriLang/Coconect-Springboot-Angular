@@ -1,3 +1,4 @@
+import { StorageService } from './storage.service';
 import { MessageService } from './message.service';
 import { UserData } from './../models/user-data';
 import { ChatMessage } from './../models/chat-message';
@@ -14,7 +15,7 @@ export class ChatService {
   baseUrl = environment.baseUrl;
 
   userData: UserData = {
-    identityCode: this.makeIdentityCode(15),
+    identityCode: '',
     username: '',
     connected: false,
   };
@@ -22,21 +23,26 @@ export class ChatService {
 
   newMessage = new Subject<ChatMessage>();
   newMessage$ = this.newMessage.asObservable();
-  constructor(private messageService: MessageService) {}
+  constructor(
+    private messageService: MessageService,
+    private storageService: StorageService
+  ) {}
 
   handleUserName(value: string) {
     this.userData = { ...this.userData, username: value };
   }
-  registerUser(username: string) {
-    this.userData.username = username;
+  registerUser(userData: UserData) {
+    this.userData = userData;
     this.connect();
   }
   connect = () => {
     let sock = new SockJS(`${this.baseUrl}/ws`, null, {});
     this.stompClient = over(sock);
     this.stompClient.connect(
-      // { 'ngrok-skip-browser-warning': 1606 },
-      {},
+      {
+        Authorization:
+          'Bearer ' + this.storageService.getTokenFromLocal('cc_access_token'),
+      },
       this.onConnected,
       this.onError
     );
@@ -99,16 +105,5 @@ export class ChatService {
         this.newMessage.next(chatMessage);
       }
     }
-  }
-
-  makeIdentityCode(length: number): string {
-    var result = '';
-    var characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
   }
 }

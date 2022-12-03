@@ -1,12 +1,14 @@
 package com.ktl.server.room;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -27,25 +29,30 @@ public class RoomServiceImpl implements RoomService {
 
     @Autowired
     private final UserRepo userRepo;
+    @Autowired
+    private final ModelMapper modelMapper;
 
     @Autowired
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
-    public String saveRoom(Room room) {
+    public RoomDto createRoom(String username, Room room) {
         // TODO Auto-generated method stub
+        AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("Not found user"));
         Room r = Room.builder()
                 .roomCode(UUID.randomUUID().toString())
                 .roomName(room.getRoomName())
-                .members(new LinkedHashSet<>())
+                .members(new LinkedHashSet<>(Arrays.asList(user)))
+                .creator(username)
                 .build();
-        return roomRepo.save(r).getRoomCode();
+        return modelMapper.map(roomRepo.save(r), RoomDto.class);
     }
 
     @Override
-    public Room getRoomByRoomCode(String roomCode) {
+    public RoomDto getRoomByRoomCode(String roomCode) {
         // TODO Auto-generated method stub
-        return roomRepo.findByRoomCode(roomCode).orElseThrow(() -> new RuntimeException("Not found room"));
+        Room room = roomRepo.findByRoomCode(roomCode).orElseThrow(() -> new RuntimeException("Not found room"));
+        return modelMapper.map(room, RoomDto.class);
     }
 
     @Transactional

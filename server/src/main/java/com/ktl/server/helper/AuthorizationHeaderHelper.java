@@ -1,6 +1,7 @@
 package com.ktl.server.helper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -11,11 +12,12 @@ import com.ktl.server.jwt.JwtConfig;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Component
 public class AuthorizationHeaderHelper {
     @Autowired
-    private static JwtConfig jwtConfig;
+    private JwtConfig jwtConfig;
 
-    public static String getSub(String authorizationHeader) {
+    public String getSub(String authorizationHeader) {
         try {
             String token = authorizationHeader.replace(jwtConfig.getTokenPrefix(), "");
             Algorithm algorithm = Algorithm.HMAC256(jwtConfig.getSecretKey().getBytes());

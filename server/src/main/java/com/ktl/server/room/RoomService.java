@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface RoomService {
 
-    String saveRoom(Room room);
+    RoomDto createRoom(String username, Room room);
 
-    Room getRoomByRoomCode(String roomCode);
+    RoomDto getRoomByRoomCode(String roomCode);
 
     void addMembers(String roomCode, List<String> usernames);
 

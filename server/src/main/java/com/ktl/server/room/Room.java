@@ -3,7 +3,6 @@ package com.ktl.server.room;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,5 +26,6 @@ public class Room {
     private String roomName;
     @ManyToMany
     private Set<AppUser> members;
+    private String creator;
 
 }

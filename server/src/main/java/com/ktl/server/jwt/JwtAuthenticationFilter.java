@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                         Authentication authResult) throws IOException, ServletException {
 
                 User user = (User) authResult.getPrincipal();
-                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+                Algorithm algorithm = Algorithm.HMAC256(jwtConfig.getSecretKey().getBytes());
                 String access_token = JWT.create()
                                 .withSubject(authResult.getName())
                                 .withExpiresAt(java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfig
