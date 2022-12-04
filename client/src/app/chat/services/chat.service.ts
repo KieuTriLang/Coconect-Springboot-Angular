@@ -1,6 +1,6 @@
 import { StorageService } from './storage.service';
 import { MessageService } from './message.service';
-import { UserData } from './../models/user-data';
+import { UserData } from '../interfaces/user-data';
 import { ChatMessage } from './../models/chat-message';
 import { Injectable } from '@angular/core';
 import * as SockJS from 'sockjs-client';
@@ -49,13 +49,17 @@ export class ChatService {
   };
 
   onConnected = () => {
-    this.userData = { ...this.userData, connected: true };
     this.stompClient.subscribe('/chatroom/public', this.onMessageReceived);
     this.stompClient.subscribe(
       '/user/' + this.userData.identityCode + '/private',
       this.onPrivateMessage
     );
   };
+
+  subscribeRoom(roomCode: string) {
+    this.stompClient.subscribe(`/room/${roomCode}`, this.onMessageReceived);
+  }
+  unsubscribeRoom(roomCode: string) {}
   onError = (error: any) => {
     console.log(error);
   };

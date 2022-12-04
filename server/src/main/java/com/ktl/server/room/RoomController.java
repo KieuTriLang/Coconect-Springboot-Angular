@@ -36,7 +36,7 @@ public class RoomController {
 
     @PostMapping("")
     public ResponseEntity<Object> createRoom(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-            @RequestBody Room room) {
+            @RequestBody RoomRequest room) {
         String username = authorizationHeaderHelper.getSub(authorizationHeader);
         return ResponseEntity.ok(roomService.createRoom(username, room));
     }
@@ -49,8 +49,8 @@ public class RoomController {
     }
 
     @DeleteMapping("/{roomCode}/members")
-    public ResponseEntity<Object> deleteMembers(@PathVariable String roomCode, @RequestParam List<String> usernames) {
-        roomService.deleteMembers(roomCode, usernames);
+    public ResponseEntity<Object> removeMembers(@PathVariable String roomCode, @RequestParam List<String> usernames) {
+        roomService.removeMembers(roomCode, usernames);
         return ResponseEntity.ok().build();
     }
 }

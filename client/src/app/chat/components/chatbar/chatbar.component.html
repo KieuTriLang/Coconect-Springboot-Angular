@@ -1,4 +1,9 @@
 <form class="chatbar" [formGroup]="form" (submit)="submit()">
-  <input type="text" placeholder="Text me . . ." formControlName="message" />
+  <input
+    type="text"
+    placeholder="Text me . . ."
+    formControlName="message"
+    autofocus
+  />
   <button type="submit"></button>
 </form>

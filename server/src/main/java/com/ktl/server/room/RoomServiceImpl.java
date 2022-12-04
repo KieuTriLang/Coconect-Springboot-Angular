@@ -36,7 +36,7 @@ public class RoomServiceImpl implements RoomService {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
-    public RoomDto createRoom(String username, Room room) {
+    public RoomDto createRoom(String username, RoomRequest room) {
         // TODO Auto-generated method stub
         AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("Not found user"));
         Room r = Room.builder()
@@ -45,7 +45,9 @@ public class RoomServiceImpl implements RoomService {
                 .members(new LinkedHashSet<>(Arrays.asList(user)))
                 .creator(username)
                 .build();
-        return modelMapper.map(roomRepo.save(r), RoomDto.class);
+        Room nr = roomRepo.save(r);
+        nr.getMembers();
+        return modelMapper.map(nr, RoomDto.class);
     }
 
     @Override
@@ -79,7 +81,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void deleteMembers(String roomCode, List<String> usernames) {
+    public void removeMembers(String roomCode, List<String> usernames) {
         // TODO Auto-generated method stub
         List<String> userCodes = new ArrayList<>();
         Room room = roomRepo.findByRoomCode(roomCode).orElseThrow(() -> new RuntimeException("Not room found"));

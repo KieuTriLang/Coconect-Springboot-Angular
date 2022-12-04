@@ -1,3 +1,4 @@
+import { CommandService } from './../../services/command.service';
 import { ChatService } from './../../services/chat.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -10,7 +11,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class ChatbarComponent implements OnInit {
   @Input() tabSelected = 'public';
   form!: FormGroup;
-  constructor(private fb: FormBuilder, private chatService: ChatService) {}
+  constructor(
+    private fb: FormBuilder,
+    private chatService: ChatService,
+    private commandService: CommandService
+  ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -20,12 +25,55 @@ export class ChatbarComponent implements OnInit {
 
   submit() {
     if (this.form.valid) {
-      this.chatService.sendMessage(
-        this.tabSelected,
-        this.form.value.message,
-        false
-      );
+      const text = this.form.value.message;
+      if (this.commandService.checkAllPrefixCommand(text)) {
+        this.handleCommand(text);
+      } else {
+        this.chatService.sendMessage(this.tabSelected, text, false);
+      }
       this.form.reset();
     }
+  }
+
+  handleCommand(text: string) {
+    const newText: string = this.commandService.removeAllPrefix(text);
+    const nameList: string[] = this.getListStringFromText(newText);
+    const { createRoom, addMember, removeMember } =
+      this.commandService.prefixCommandRegex;
+    if (newText.length == 0) {
+      return;
+    }
+    switch (true) {
+      case new RegExp(createRoom.regex, 'i').test(text):
+        createRoom.action({
+          roomCode: '',
+          roomName: nameList[0],
+          members: [],
+        });
+        break;
+      case new RegExp(addMember.regex, 'i').test(text) &&
+        this.tabSelected != 'public':
+        addMember.action({
+          roomCode: this.tabSelected,
+          roomName: '',
+          members: nameList,
+        });
+        break;
+      case new RegExp(removeMember.regex, 'i').test(text) &&
+        this.tabSelected != 'public':
+        removeMember.action({
+          roomCode: '1234',
+          roomName: '',
+          members: nameList,
+        });
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  getListStringFromText(text: string): string[] {
+    return text.trim().split(' ');
   }
 }
