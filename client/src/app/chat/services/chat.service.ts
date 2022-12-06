@@ -1,3 +1,5 @@
+import { UserService } from './user.service';
+import { AuthService } from './auth.service';
 import { StorageService } from './storage.service';
 import { MessageService } from './message.service';
 import { UserData } from '../interfaces/user-data';
@@ -7,12 +9,24 @@ import * as SockJS from 'sockjs-client';
 import { environment } from 'src/environments/environment';
 import { Client, Message, over } from 'stompjs';
 import { Subject } from 'rxjs';
+import { ITab } from '../interfaces/tab';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatService {
   baseUrl = environment.baseUrl;
+
+  currentTab: string = 'public';
+  tabs: ITab[] = [
+    {
+      id: null,
+      conversationCode: 'public',
+      name: 'Public room',
+      unread: 0,
+      personal: false,
+    },
+  ];
 
   userData: UserData = {
     identityCode: '',
@@ -25,12 +39,11 @@ export class ChatService {
   newMessage$ = this.newMessage.asObservable();
   constructor(
     private messageService: MessageService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private authService: AuthService,
+    private userService: UserService
   ) {}
 
-  handleUserName(value: string) {
-    this.userData = { ...this.userData, username: value };
-  }
   registerUser(userData: UserData) {
     this.userData = userData;
     this.connect();
@@ -54,12 +67,29 @@ export class ChatService {
       '/user/' + this.userData.identityCode + '/private',
       this.onPrivateMessage
     );
+    this.authService.authenticated$.subscribe((val) => {
+      this.userService.getInfo().subscribe({
+        next: (res) => {
+          if (res.conversations.length > 0) {
+            res.conversations.forEach((tab) => {
+              if (!tab.personal) {
+                this.subscribeRoom(tab.conversationCode);
+              }
+            });
+          }
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
+    });
   };
 
   subscribeRoom(roomCode: string) {
     this.stompClient.subscribe(`/room/${roomCode}`, this.onMessageReceived);
   }
   unsubscribeRoom(roomCode: string) {}
+
   onError = (error: any) => {
     console.log(error);
   };
@@ -109,5 +139,19 @@ export class ChatService {
         this.newMessage.next(chatMessage);
       }
     }
+  }
+
+  createNewTab(newTab: ITab) {
+    if (
+      this.tabs.filter(
+        (tab: ITab) => tab.conversationCode == newTab.conversationCode
+      ).length == 0 &&
+      newTab.conversationCode != this.userData.identityCode
+    ) {
+      this.tabs = [...this.tabs, newTab];
+    }
+  }
+  changeTab(conversationCode: string) {
+    this.currentTab = conversationCode;
   }
 }

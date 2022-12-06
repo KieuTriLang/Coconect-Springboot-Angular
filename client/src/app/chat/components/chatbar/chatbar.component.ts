@@ -38,7 +38,7 @@ export class ChatbarComponent implements OnInit {
   handleCommand(text: string) {
     const newText: string = this.commandService.removeAllPrefix(text);
     const nameList: string[] = this.getListStringFromText(newText);
-    const { createRoom, addMember, removeMember } =
+    const { createRoom, addMember, removeMember, leaveRoom } =
       this.commandService.prefixCommandRegex;
     if (newText.length == 0) {
       return;
@@ -47,7 +47,7 @@ export class ChatbarComponent implements OnInit {
       case new RegExp(createRoom.regex, 'i').test(text):
         createRoom.action({
           roomCode: '',
-          roomName: nameList[0],
+          roomName: nameList.join(' '),
           members: [],
         });
         break;
@@ -67,7 +67,14 @@ export class ChatbarComponent implements OnInit {
           members: nameList,
         });
         break;
-
+      case new RegExp(leaveRoom.regex, 'i').test(text) &&
+        this.tabSelected != 'public':
+        leaveRoom.action({
+          roomCode: '1234',
+          roomName: '',
+          members: nameList,
+        });
+        break;
       default:
         break;
     }

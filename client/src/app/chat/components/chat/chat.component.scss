@@ -2,12 +2,12 @@
 @use "src/responsive" as *;
 .chat-container {
   padding: 10px;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  translate: -50% -50%;
-  width: 80%;
-  min-width: 275px;
+  // position: fixed;
+  // top: 50%;
+  // left: 50%;
+  // translate: -50% -50%;
+  // width: 80%;
+  // min-width: 275px;
   height: 80vh;
   background: linear-gradient(60deg, rgba($color-5, 0.6), rgba($color-2, 0.6));
 

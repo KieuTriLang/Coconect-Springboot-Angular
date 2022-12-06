@@ -1,16 +1,17 @@
 <div class="chat-container">
   <app-tab
-    [tabSelected]="tabSelected"
-    [tabs]="tabs"
-    (tabSelectedChange)="handleTabSelected($event)"
+    [tabs]="chatService.tabs"
+    [currentTab]="chatService.currentTab"
+    (currentTabChanged)="handleTabChanged($event)"
   ></app-tab>
   <div class="message-container" #messageContainer>
     <app-chat-message
-      *ngFor="let userMess of conversations.get(this.tabSelected)"
+      *ngFor="
+        let userMess of conversationService.getByKey(chatService.currentTab)
+      "
       [userCode]="userCode"
       [userMess]="userMess"
-      (openChatByUser)="handleNewConversation($event)"
     ></app-chat-message>
   </div>
-  <app-chatbar [tabSelected]="tabSelected"></app-chatbar>
+  <app-chatbar [tabSelected]="chatService.currentTab"></app-chatbar>
 </div>

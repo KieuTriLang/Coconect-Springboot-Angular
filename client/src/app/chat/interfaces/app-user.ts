@@ -1,7 +1,7 @@
-import { Room } from './room';
+import { ITab } from './tab';
 
 export interface AppUser {
   userCode: string;
   username: string;
-  roooms: Room[] | null;
+  conversations: ITab[] | [];
 }

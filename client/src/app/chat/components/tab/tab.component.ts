@@ -1,4 +1,4 @@
-import { TabConversation } from './../../models/tab-conversation';
+import { ITab } from './../../interfaces/tab';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
@@ -7,16 +7,15 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
   styleUrls: ['./tab.component.scss'],
 })
 export class TabComponent implements OnInit {
-  @Input() tabSelected: string = '';
-  @Input() tabs: TabConversation[] = [];
-  @Output() tabSelectedChange: EventEmitter<string> =
+  @Input() tabs: ITab[] = [];
+  @Input() currentTab: string = '';
+  @Output() currentTabChanged: EventEmitter<string> =
     new EventEmitter<string>();
   constructor() {}
 
   ngOnInit(): void {}
 
-  selectTab(identityCode: string) {
-    this.tabSelected = identityCode;
-    this.tabSelectedChange.emit(this.tabSelected);
+  changeTab(conversationCode: string) {
+    this.currentTabChanged.emit(conversationCode);
   }
 }

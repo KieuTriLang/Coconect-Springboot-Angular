@@ -2,12 +2,12 @@
   <div
     class="tab-item"
     *ngFor="let tab of tabs"
-    [class.active]="tab.identityCode == tabSelected"
-    (click)="selectTab(tab.identityCode)"
+    [class.active]="tab.conversationCode == currentTab"
+    (click)="changeTab(tab.conversationCode)"
   >
     {{ tab.name }}
-    <span class="unread" *ngIf="tab.numberUnread > 0">
-      {{tab.numberUnread}}
+    <span class="unread" *ngIf="tab.unread > 0">
+      {{tab.unread}}
     </span>
   </div>
 </div>

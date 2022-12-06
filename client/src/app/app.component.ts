@@ -1,8 +1,13 @@
 import { StorageService } from './chat/services/storage.service';
 import { AuthService } from './chat/services/auth.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ChatService } from './chat/services/chat.service';
-import { Component } from '@angular/core';
+import {
+  AfterViewChecked,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
 @Component({
@@ -10,10 +15,11 @@ import { Title } from '@angular/platform-browser';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit, AfterViewChecked {
   isLogin = true;
   loginForm!: FormGroup;
   registerForm!: FormGroup;
+  @ViewChild('notiList') notiList!: ElementRef;
   constructor(
     private titleService: Title,
     public authService: AuthService,
@@ -31,6 +37,10 @@ export class AppComponent {
       rePassword: ['', [Validators.required]],
     });
   }
+  ngOnInit(): void {}
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
+  }
   login() {
     if (this.loginForm.valid) {
       this.authService
@@ -41,7 +51,7 @@ export class AppComponent {
               'cc_access_token',
               res.access_token
             );
-            this.authService.authenticated = true;
+            this.authService.authenticated.next(true);
             this.loginForm.reset();
           },
           error: (err) => {
@@ -72,5 +82,11 @@ export class AppComponent {
     return (
       this.registerForm.value.password == this.registerForm.value.rePassword
     );
+  }
+  scrollToBottom() {
+    try {
+      this.notiList.nativeElement.scrollTop =
+        this.notiList.nativeElement.scrollHeight;
+    } catch (err) {}
   }
 }

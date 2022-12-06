@@ -52,7 +52,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     .username(registerRequest.getUsername())
                     .password(passwordEncoder.encode(registerRequest.getPassword()))
                     .role(USER)
-                    .rooms(new LinkedHashSet<>()).build();
+                    .conversations(new LinkedHashSet<>()).build();
+
             userRepo.save(user);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public AppUserDto getInfoUserByUsername(String username) {
         // TODO Auto-generated method stub
         AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-        user.getRooms();
+        user.getConversations();
         return modelMapper.map(user, AppUserDto.class);
     }
 

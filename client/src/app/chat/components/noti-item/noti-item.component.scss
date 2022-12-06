@@ -1,0 +1,39 @@
+@use "src/variable" as *;
+.noti-item {
+  width: 100%;
+  & .icon {
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-white;
+    font-size: 2.4rem;
+    border-radius: 5px;
+    cursor: pointer;
+    &.info {
+      background: rgba(#47b5ff, 0.85);
+      &:hover {
+        background: rgba(#47b5ff, 0.65);
+      }
+    }
+    &.checked {
+      background: rgba(#6eccaf, 0.85);
+      &:hover {
+        background: rgba(#6eccaf, 0.65);
+      }
+    }
+    &.danger {
+      background: rgba(#e94560, 0.85);
+      &:hover {
+        background: rgba(#e94560, 0.65);
+      }
+    }
+    &.invite {
+      background: rgba(#e94560, 0.85);
+      &:hover {
+        background: rgba(#e94560, 0.65);
+      }
+    }
+  }
+}

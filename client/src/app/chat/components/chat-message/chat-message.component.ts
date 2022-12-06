@@ -1,10 +1,9 @@
+import { ChatService } from './../../services/chat.service';
 import { UserMess } from './../../models/user-mess';
 import {
   Component,
   Input,
   OnInit,
-  Output,
-  EventEmitter,
   ViewEncapsulation,
   ElementRef,
   AfterViewInit,
@@ -19,12 +18,12 @@ import * as copy from 'copy-to-clipboard';
 export class ChatMessageComponent implements OnInit, AfterViewInit {
   @Input() userCode!: string;
   @Input() userMess!: UserMess;
-  @Output() openChatByUser: EventEmitter<{
-    identityCode: string;
-    username: string;
-  }> = new EventEmitter<{ identityCode: string; username: string }>();
+
   mColors: any;
-  constructor(private elementRef: ElementRef) {}
+  constructor(
+    private elementRef: ElementRef,
+    private chatService: ChatService
+  ) {}
   ngAfterViewInit(): void {
     this.mColors =
       this.elementRef.nativeElement.querySelectorAll('.message-color');
@@ -41,9 +40,12 @@ export class ChatMessageComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {}
 
   openNewChat() {
-    this.openChatByUser.emit({
-      identityCode: this.userMess.identityCode,
-      username: this.userMess.username,
+    this.chatService.createNewTab({
+      id: null,
+      conversationCode: this.userMess.identityCode,
+      name: this.userMess.username,
+      unread: 0,
+      personal: true,
     });
   }
 }

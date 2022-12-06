@@ -3,6 +3,6 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root',
 })
-export class TabSevice {
+export class NotificationService {
   constructor() {}
 }

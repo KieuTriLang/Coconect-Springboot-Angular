@@ -12,6 +12,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SafeHtmlPipe } from './chat/pipes/safe-html.pipe';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './chat/interceptors/auth.interceptor';
+import { NotiItemComponent } from './chat/components/noti-item/noti-item.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -21,12 +23,14 @@ import { AuthInterceptor } from './chat/interceptors/auth.interceptor';
     TabComponent,
     ChatbarComponent,
     SafeHtmlPipe,
+    NotiItemComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
+    FontAwesomeModule,
   ],
   providers: [
     {

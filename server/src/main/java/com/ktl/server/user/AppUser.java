@@ -9,7 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
+import com.ktl.server.conversation.Conversation;
 import com.ktl.server.room.Room;
 import com.ktl.server.security.AppUserRole;
 
@@ -33,7 +35,7 @@ public class AppUser {
     private AppUserRole role;
     private String username;
     private String password;
-    @ManyToMany
-    private Set<Room> rooms;
+    @OneToMany
+    private Set<Conversation> conversations;
 
 }

@@ -1,6 +1,6 @@
+import { ChatService } from './chat.service';
 import { RoomService } from './room.service';
 import { Injectable } from '@angular/core';
-import { Room } from '../interfaces/room';
 import { IRoomRequest } from '../interfaces/room-request';
 
 interface IObjectKeys {
@@ -15,11 +15,15 @@ interface ICommandRegex {
 })
 export class CommandService {
   prefixCommandRegex!: IObjectKeys;
-  constructor(private roomService: RoomService) {
+  constructor(
+    private roomService: RoomService,
+    private chatService: ChatService
+  ) {
     this.prefixCommandRegex = {
       createRoom: { regex: `^\/CreateRoom:`, action: this.createRoom },
       addMember: { regex: `^\/AddMember:`, action: this.addMember },
       removeMember: { regex: `^\/RemoveMember:`, action: this.removeMember },
+      leaveRoom: { regex: `\/LeaveRoom:`, action: this.leaveRoom },
     };
   }
 
@@ -37,10 +41,12 @@ export class CommandService {
 
   mergePrefixCommandRegex(): string {
     let regex = '';
+    let lastKey = Object.keys(this.prefixCommandRegex).pop();
     for (const key in this.prefixCommandRegex) {
       if (Object.prototype.hasOwnProperty.call(this.prefixCommandRegex, key)) {
         const element = this.prefixCommandRegex[key].regex;
-        regex += `${element}|`;
+
+        regex += key == lastKey ? `${element}` : `${element}|`;
       }
     }
     return regex;
@@ -48,7 +54,14 @@ export class CommandService {
   createRoom = ({ roomName }: IRoomRequest) => {
     this.roomService.createRoom(roomName).subscribe({
       next: (res) => {
-        console.log(res);
+        this.chatService.createNewTab({
+          id: null,
+          conversationCode: res.roomCode,
+          name: res.roomName,
+          unread: 0,
+          personal: false,
+        });
+        this.chatService.subscribeRoom(res.roomCode);
       },
       error: (err) => {
         console.log(err);
@@ -75,4 +88,5 @@ export class CommandService {
       },
     });
   };
+  leaveRoom = ({ roomCode }: IRoomRequest) => {};
 }

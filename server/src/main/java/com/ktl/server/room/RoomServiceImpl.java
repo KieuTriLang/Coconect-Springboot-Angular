@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import com.ktl.server.chat.Message;
 import com.ktl.server.chat.Status;
+import com.ktl.server.conversation.Conversation;
+import com.ktl.server.conversation.ConversationRepo;
 import com.ktl.server.user.AppUser;
 import com.ktl.server.user.UserRepo;
 
@@ -26,9 +29,10 @@ public class RoomServiceImpl implements RoomService {
 
     @Autowired
     private final RoomRepo roomRepo;
-
     @Autowired
     private final UserRepo userRepo;
+    @Autowired
+    private final ConversationRepo conversationRepo;
     @Autowired
     private final ModelMapper modelMapper;
 
@@ -46,6 +50,15 @@ public class RoomServiceImpl implements RoomService {
                 .creator(username)
                 .build();
         Room nr = roomRepo.save(r);
+        Conversation conversation = conversationRepo
+                .save(new Conversation(null, nr.getRoomCode(), nr.getRoomName(), 0, false));
+        Set<Conversation> conversations = user.getConversations();
+        if (conversations.size() > 0) {
+            user.getConversations().add(conversation);
+        } else {
+            user.setConversations(new LinkedHashSet<>(Arrays.asList(conversation)));
+        }
+        userRepo.save(user);
         nr.getMembers();
         return modelMapper.map(nr, RoomDto.class);
     }

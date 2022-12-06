@@ -1,5 +1,19 @@
 <div class="container">
-  <app-chat *ngIf="authService.authenticated; else loginTemp"></app-chat>
+  <app-chat
+    *ngIf="authService.authenticated$ | async; else loginTemp"
+  ></app-chat>
+  <button
+    type="button"
+    class="logout"
+    *ngIf="authService.authenticated$ | async"
+    (click)="authService.logout()"
+  >
+    Logout
+  </button>
+  <!-- <div class="noti-list" #notiList *ngIf="authService.authenticated$ | async">
+    <app-noti-item></app-noti-item>
+    <app-noti-item></app-noti-item>
+  </div> -->
 </div>
 
 <ng-template #loginTemp>
@@ -17,6 +31,7 @@
         type="text"
         formControlName="username"
         placeholder="Username . . ."
+        autofocus
       />
       <input
         type="password"
