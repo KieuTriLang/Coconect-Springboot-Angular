@@ -1,3 +1,4 @@
+// import { ITab } from './../interfaces/tab';
 import { UserService } from './user.service';
 import { AuthService } from './auth.service';
 import { StorageService } from './storage.service';
@@ -68,6 +69,9 @@ export class ChatService {
       this.onPrivateMessage
     );
     this.authService.authenticated$.subscribe((val) => {
+      if (!val) {
+        return;
+      }
       this.userService.getInfo().subscribe({
         next: (res) => {
           if (res.conversations.length > 0) {
@@ -126,17 +130,29 @@ export class ChatService {
         content: this.messageService.transformMessage(message),
         status: 'MESSAGE',
         postedTime: new Date().toISOString(),
-        toGroup: toGroup,
+        toRoom: toGroup,
       };
       if (receiverCode == 'public') {
         this.stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
       } else {
-        this.stompClient.send(
-          '/app/message-private',
-          {},
-          JSON.stringify(chatMessage)
-        );
-        this.newMessage.next(chatMessage);
+        this.userService
+          .addPrivateConversation(
+            chatMessage.identityCode,
+            chatMessage.receiverCode
+          )
+          .subscribe({
+            next: (res) => {
+              this.stompClient.send(
+                '/app/message-private',
+                {},
+                JSON.stringify(chatMessage)
+              );
+              this.newMessage.next(chatMessage);
+            },
+            error: (err) => {
+              console.log(err);
+            },
+          });
       }
     }
   }
@@ -149,6 +165,7 @@ export class ChatService {
       newTab.conversationCode != this.userData.identityCode
     ) {
       this.tabs = [...this.tabs, newTab];
+      this.currentTab = newTab.conversationCode;
     }
   }
   changeTab(conversationCode: string) {

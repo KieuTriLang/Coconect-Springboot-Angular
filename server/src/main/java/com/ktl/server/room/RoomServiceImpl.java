@@ -53,7 +53,7 @@ public class RoomServiceImpl implements RoomService {
         Conversation conversation = conversationRepo
                 .save(new Conversation(null, nr.getRoomCode(), nr.getRoomName(), 0, false));
         Set<Conversation> conversations = user.getConversations();
-        if (conversations.size() > 0) {
+        if (conversations != null && conversations.size() > 0) {
             user.getConversations().add(conversation);
         } else {
             user.setConversations(new LinkedHashSet<>(Arrays.asList(conversation)));

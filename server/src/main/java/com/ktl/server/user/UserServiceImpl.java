@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.ktl.server.conversation.Conversation;
+import com.ktl.server.conversation.ConversationRepo;
+import com.ktl.server.conversation.ConversationResponse;
 import com.ktl.server.home.RegisterRequest;
 import static com.ktl.server.security.AppUserRole.*;
 
@@ -29,6 +35,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private final ConversationRepo conversationRepo;
 
     @Autowired
     private final ModelMapper modelMapper;
@@ -71,8 +80,53 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public AppUserDto getInfoUserByUsername(String username) {
         // TODO Auto-generated method stub
         AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-        user.getConversations();
         return modelMapper.map(user, AppUserDto.class);
+    }
+
+    @Override
+    public void addPrivateConversation(String senderCode, String receiverCode) {
+        // TODO Auto-generated method stub
+        AppUser sender = userRepo.findByUserCode(senderCode)
+                .orElseThrow(() -> new RuntimeException("Not found sender"));
+
+        Set<Conversation> senderCon = sender.getConversations();
+
+        boolean existConversation = false;
+
+        if (senderCon != null) {
+            existConversation = senderCon.stream()
+                    .filter(conversation -> conversation.getConversationCode() == receiverCode)
+                    .collect(Collectors.toList()).size() > 0;
+            if (existConversation) {
+                return;
+            }
+        }
+        AppUser receiver = userRepo.findByUserCode(receiverCode)
+                .orElseThrow(() -> new RuntimeException("Not found receiver"));
+
+        Conversation senderConversation = conversationRepo.save(
+                Conversation.builder()
+                        .conversationCode(receiverCode)
+                        .name(receiver.getUsername())
+                        .unread(0).personal(true)
+                        .build());
+
+        if (senderCon == null) {
+            sender.setConversations(new LinkedHashSet<>(Arrays.asList(senderConversation)));
+            return;
+        } else {
+            if (!existConversation) {
+                sender.getConversations().add(senderConversation);
+            }
+        }
+
+        userRepo.save(sender);
+    }
+
+    @Override
+    public List<ConversationResponse> getConversations(String username) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

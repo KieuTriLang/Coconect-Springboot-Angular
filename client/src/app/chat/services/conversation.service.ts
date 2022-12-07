@@ -8,8 +8,9 @@ import { UserMess } from '../models/user-mess';
   providedIn: 'root',
 })
 export class ConversationService {
-  conversations = new Map<string, UserMess[]>();
+  conversations!: Map<string, UserMess[]>;
   constructor(private chatService: ChatService) {
+    this.conversations = new Map<string, UserMess[]>();
     this.conversations.set('public', []);
   }
 

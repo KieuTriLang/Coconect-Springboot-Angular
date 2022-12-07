@@ -7,6 +7,6 @@ export class ChatMessage {
     public content: string,
     public status: string,
     public postedTime: string,
-    public toGroup: boolean
+    public toRoom: boolean
   ) {}
 }

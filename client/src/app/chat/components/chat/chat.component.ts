@@ -9,6 +9,7 @@ import {
   AfterViewChecked,
   ElementRef,
   ViewChild,
+  OnDestroy,
 } from '@angular/core';
 
 @Component({
@@ -16,9 +17,10 @@ import {
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss'],
 })
-export class ChatComponent implements OnInit, AfterViewChecked {
+export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messageContainer') messC!: ElementRef;
   userCode = '';
+
   constructor(
     public chatService: ChatService,
     private authService: AuthService,
@@ -29,6 +31,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       this.handleNewMessage(message)
     );
   }
+  ngOnDestroy(): void {}
 
   ngAfterViewChecked(): void {
     this.scrollToBottom();
@@ -36,7 +39,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   ngOnInit(): void {
     this.authService.authenticated$.subscribe((val) => {
-      this.init();
+      if (val) {
+        this.init();
+      }
     });
   }
   init() {
@@ -59,13 +64,13 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   };
 
   handleTabChanged(conversationCode: string) {
-    this.chatService.changeTab(conversationCode);
     if (this.chatService.currentTab != conversationCode) {
       this.chatService.tabs = this.chatService.tabs.filter(
         (tab) =>
           this.conversationService.getByKey(tab.conversationCode).length > 0
       );
     }
+    this.chatService.changeTab(conversationCode);
   }
   // handlePublicMess(message: ChatMessage) {
   //   var publicConversation: UserMess[] = this.conversations.get('public') || [];
