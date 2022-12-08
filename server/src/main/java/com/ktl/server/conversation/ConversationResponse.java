@@ -1,6 +1,6 @@
 package com.ktl.server.conversation;
 
-import java.util.List;
+import java.util.Set;
 
 import com.ktl.server.chat.Message;
 
@@ -16,5 +16,5 @@ import lombok.NoArgsConstructor;
 public class ConversationResponse {
 
     private Conversation conversation;
-    private List<Message> messages;
+    private Set<Message> messages;
 }

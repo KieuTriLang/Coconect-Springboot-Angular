@@ -1,3 +1,4 @@
+import { ConversationService } from './conversation.service';
 import { ChatService } from './chat.service';
 import { RoomService } from './room.service';
 import { Injectable } from '@angular/core';
@@ -17,7 +18,8 @@ export class CommandService {
   prefixCommandRegex!: IObjectKeys;
   constructor(
     private roomService: RoomService,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private conversationService: ConversationService
   ) {
     this.prefixCommandRegex = {
       createRoom: { regex: `^\/CreateRoom:`, action: this.createRoom },
@@ -54,7 +56,7 @@ export class CommandService {
   createRoom = ({ roomName }: IRoomRequest) => {
     this.roomService.createRoom(roomName).subscribe({
       next: (res) => {
-        this.chatService.createNewTab({
+        this.conversationService.createNewTab({
           id: null,
           conversationCode: res.roomCode,
           name: res.roomName,

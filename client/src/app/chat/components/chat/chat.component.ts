@@ -1,7 +1,7 @@
 import { ConversationService } from './../../services/conversation.service';
 import { UserService } from './../../services/user.service';
 import { AuthService } from './../../services/auth.service';
-import { ChatMessage } from './../../models/chat-message';
+import { IChatMessage } from '../../interfaces/chat-message';
 import { ChatService } from './../../services/chat.service';
 import {
   Component,
@@ -59,18 +59,18 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       },
     });
   }
-  handleNewMessage = (message: ChatMessage) => {
-    this.conversationService.add(message);
+  handleNewMessage = (message: IChatMessage) => {
+    this.conversationService.add(message, false);
   };
 
   handleTabChanged(conversationCode: string) {
-    if (this.chatService.currentTab != conversationCode) {
-      this.chatService.tabs = this.chatService.tabs.filter(
-        (tab) =>
-          this.conversationService.getByKey(tab.conversationCode).length > 0
-      );
-    }
-    this.chatService.changeTab(conversationCode);
+    // if (this.conversationService.currentTab != conversationCode) {
+    //   this.conversationService.tabs = this.conversationService.tabs.filter(
+    //     (tab) =>
+    //       this.conversationService.getByKey(tab.conversationCode).length > 0
+    //   );
+    // }
+    this.conversationService.changeTab(conversationCode);
   }
   // handlePublicMess(message: ChatMessage) {
   //   var publicConversation: UserMess[] = this.conversations.get('public') || [];

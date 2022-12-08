@@ -1,7 +1,7 @@
 <div
   class="chat-message"
   [class.me]="userMess.identityCode == userCode"
-  [attr.posted-time]="userMess.postedTime | date: 'shortTime'"
+  [attr.posted-time]="userMess.postedTime | date : 'shortTime'"
   *ngIf="userMess"
 >
   <div class="username" (click)="openNewChat()">
@@ -11,7 +11,7 @@
     <div
       class="text"
       *ngFor="let message of userMess.messages"
-      [innerHtml]="message | safeHtml"
+      [innerHtml]="message.content | safeHtml"
     ></div>
   </div>
 </div>

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -18,6 +17,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.ktl.server.chat.Message;
+import com.ktl.server.chat.MessageRepo;
 import com.ktl.server.conversation.Conversation;
 import com.ktl.server.conversation.ConversationRepo;
 import com.ktl.server.conversation.ConversationResponse;
@@ -38,6 +39,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private final ConversationRepo conversationRepo;
+    @Autowired
+    private final MessageRepo messageRepo;
 
     @Autowired
     private final ModelMapper modelMapper;
@@ -80,6 +83,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public AppUserDto getInfoUserByUsername(String username) {
         // TODO Auto-generated method stub
         AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        user.getConversations();
         return modelMapper.map(user, AppUserDto.class);
     }
 
@@ -95,7 +99,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         if (senderCon != null) {
             existConversation = senderCon.stream()
-                    .filter(conversation -> conversation.getConversationCode() == receiverCode)
+                    .filter(conversation -> conversation.getConversationCode().equals(
+                            receiverCode))
                     .collect(Collectors.toList()).size() > 0;
             if (existConversation) {
                 return;
@@ -113,7 +118,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         if (senderCon == null) {
             sender.setConversations(new LinkedHashSet<>(Arrays.asList(senderConversation)));
-            return;
         } else {
             if (!existConversation) {
                 sender.getConversations().add(senderConversation);
@@ -121,12 +125,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         userRepo.save(sender);
-    }
-
-    @Override
-    public List<ConversationResponse> getConversations(String username) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

@@ -1,33 +1,21 @@
-// import { ITab } from './../interfaces/tab';
+import { IRoomSubscription } from './../interfaces/room-subscription';
+import { BehaviorSubject } from 'rxjs';
 import { UserService } from './user.service';
-import { AuthService } from './auth.service';
 import { StorageService } from './storage.service';
 import { MessageService } from './message.service';
 import { UserData } from '../interfaces/user-data';
-import { ChatMessage } from './../models/chat-message';
+import { IChatMessage } from '../interfaces/chat-message';
 import { Injectable } from '@angular/core';
 import * as SockJS from 'sockjs-client';
 import { environment } from 'src/environments/environment';
-import { Client, Message, over } from 'stompjs';
+import { Client, Message, over, Subscription } from 'stompjs';
 import { Subject } from 'rxjs';
-import { ITab } from '../interfaces/tab';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatService {
   baseUrl = environment.baseUrl;
-
-  currentTab: string = 'public';
-  tabs: ITab[] = [
-    {
-      id: null,
-      conversationCode: 'public',
-      name: 'Public room',
-      unread: 0,
-      personal: false,
-    },
-  ];
 
   userData: UserData = {
     identityCode: '',
@@ -36,12 +24,16 @@ export class ChatService {
   };
   stompClient!: Client;
 
-  newMessage = new Subject<ChatMessage>();
+  newMessage = new Subject<IChatMessage>();
   newMessage$ = this.newMessage.asObservable();
+
+  connected = new BehaviorSubject<boolean>(false);
+  connected$ = this.connected.asObservable();
+
+  roomSubscriptions: IRoomSubscription[] = [];
   constructor(
     private messageService: MessageService,
     private storageService: StorageService,
-    private authService: AuthService,
     private userService: UserService
   ) {}
 
@@ -68,29 +60,20 @@ export class ChatService {
       '/user/' + this.userData.identityCode + '/private',
       this.onPrivateMessage
     );
-    this.authService.authenticated$.subscribe((val) => {
-      if (!val) {
-        return;
-      }
-      this.userService.getInfo().subscribe({
-        next: (res) => {
-          if (res.conversations.length > 0) {
-            res.conversations.forEach((tab) => {
-              if (!tab.personal) {
-                this.subscribeRoom(tab.conversationCode);
-              }
-            });
-          }
-        },
-        error: (err) => {
-          console.log(err);
-        },
-      });
-    });
+    this.connected.next(true);
   };
 
   subscribeRoom(roomCode: string) {
-    this.stompClient.subscribe(`/room/${roomCode}`, this.onMessageReceived);
+    this.roomSubscriptions = [
+      ...this.roomSubscriptions,
+      {
+        roomCode: roomCode,
+        subscription: this.stompClient.subscribe(
+          `/room/${roomCode}`,
+          this.onMessageReceived
+        ),
+      },
+    ];
   }
   unsubscribeRoom(roomCode: string) {}
 
@@ -122,7 +105,7 @@ export class ChatService {
 
   sendMessage(receiverCode: string, message: string, toGroup: boolean) {
     if (this.stompClient) {
-      var chatMessage: ChatMessage = {
+      var chatMessage: IChatMessage = {
         id: null,
         identityCode: this.userData.identityCode,
         senderName: this.userData.username,
@@ -155,20 +138,5 @@ export class ChatService {
           });
       }
     }
-  }
-
-  createNewTab(newTab: ITab) {
-    if (
-      this.tabs.filter(
-        (tab: ITab) => tab.conversationCode == newTab.conversationCode
-      ).length == 0 &&
-      newTab.conversationCode != this.userData.identityCode
-    ) {
-      this.tabs = [...this.tabs, newTab];
-      this.currentTab = newTab.conversationCode;
-    }
-  }
-  changeTab(conversationCode: string) {
-    this.currentTab = conversationCode;
   }
 }

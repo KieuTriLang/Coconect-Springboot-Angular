@@ -1,5 +1,5 @@
-import { ChatService } from './../../services/chat.service';
-import { UserMess } from './../../models/user-mess';
+import { ConversationService } from './../../services/conversation.service';
+import { IUserMess } from '../../interfaces/user-mess';
 import {
   Component,
   Input,
@@ -17,12 +17,12 @@ import * as copy from 'copy-to-clipboard';
 })
 export class ChatMessageComponent implements OnInit, AfterViewInit {
   @Input() userCode!: string;
-  @Input() userMess!: UserMess;
+  @Input() userMess!: IUserMess;
 
   mColors: any;
   constructor(
     private elementRef: ElementRef,
-    private chatService: ChatService
+    private conversationService: ConversationService
   ) {}
   ngAfterViewInit(): void {
     this.mColors =
@@ -40,7 +40,7 @@ export class ChatMessageComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {}
 
   openNewChat() {
-    this.chatService.createNewTab({
+    this.conversationService.createNewTab({
       id: null,
       conversationCode: this.userMess.identityCode,
       name: this.userMess.username,

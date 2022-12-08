@@ -1,6 +1,6 @@
 package com.ktl.server.user;
 
-import java.util.List;
+import java.util.Set;
 
 import com.ktl.server.conversation.ConversationResponse;
 import com.ktl.server.home.RegisterRequest;
@@ -15,5 +15,4 @@ public interface UserService {
 
     void addPrivateConversation(String senderCode, String receiverCode);
 
-    List<ConversationResponse> getConversations(String username);
 }

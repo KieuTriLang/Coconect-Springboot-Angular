@@ -30,9 +30,9 @@ public class MessageController {
 
     @GetMapping("/room/{roomCode}")
     public ResponseEntity<Object> getRoomConversation(@PathVariable String roomCode,
-            @RequestParam(required = false) Long id) {
+            @RequestParam Long id) {
         List<Message> messages = new ArrayList<>();
-        if (id != null && id > 0) {
+        if (id > 0) {
 
             messages = messageService.getMessagesByRoomCodeBeforeId(roomCode, id);
         } else {
@@ -45,10 +45,10 @@ public class MessageController {
     @GetMapping("/private/{receiverCode}")
     public ResponseEntity<Object> getPrivateConversation(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @PathVariable String receiverCode,
-            @RequestParam(required = false) Long id) {
+            @RequestParam Long id) {
         String username = authorizationHeaderHelper.getSub(authorizationHeader);
         List<Message> messages = new ArrayList<>();
-        if (id != null && id > 0) {
+        if (id > 0) {
 
             messages = messageService.getMessagesByUserCodeBeforeId(username, receiverCode, id);
         } else {

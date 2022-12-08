@@ -1,6 +1,7 @@
 package com.ktl.server.user;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,18 +48,15 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/conversations")
-    public ResponseEntity<List<Object>> getConversations(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping("/conversations")
     public ResponseEntity<Object> addPrivateConversation(
-            @RequestParam(required = false) String senderCode,
-            @RequestParam(required = false) String receiverCode) {
+            @RequestParam String senderCode,
+            @RequestParam String receiverCode) {
+
         userService.addPrivateConversation(senderCode, receiverCode);
+
         userService.addPrivateConversation(receiverCode, senderCode);
+
         return ResponseEntity.ok().build();
     }
 }
