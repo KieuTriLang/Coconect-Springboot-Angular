@@ -38,7 +38,7 @@ public class MessageController {
         } else {
             messages = messageService.getMessagesByRoomCodeBegin(roomCode);
         }
-        Collections.reverse(messages);
+        // Collections.reverse(messages);
         return ResponseEntity.ok(messages);
     }
 
@@ -54,7 +54,7 @@ public class MessageController {
         } else {
             messages = messageService.getMessagesByUserCodeBegin(username, receiverCode);
         }
-        Collections.reverse(messages);
+        // Collections.reverse(messages);
         return ResponseEntity.ok(messages);
     }
 }

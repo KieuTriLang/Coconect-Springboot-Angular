@@ -56,13 +56,17 @@ export class CommandService {
   createRoom = ({ roomName }: IRoomRequest) => {
     this.roomService.createRoom(roomName).subscribe({
       next: (res) => {
-        this.conversationService.createNewTab({
-          id: null,
-          conversationCode: res.roomCode,
-          name: res.roomName,
-          unread: 0,
-          personal: false,
-        });
+        this.conversationService.createNewTab(
+          {
+            id: null,
+            conversationCode: res.roomCode,
+            name: res.roomName,
+            unread: 0,
+            personal: false,
+          },
+          false,
+          true
+        );
         this.chatService.subscribeRoom(res.roomCode);
       },
       error: (err) => {

@@ -1,3 +1,5 @@
+import { NotiType } from './chat/data/noti-type.data';
+import { INotiItem } from './chat/interfaces/noti-item';
 import { StorageService } from './chat/services/storage.service';
 import { AuthService } from './chat/services/auth.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -19,6 +21,12 @@ export class AppComponent implements OnInit, AfterViewChecked {
   isLogin = true;
   loginForm!: FormGroup;
   registerForm!: FormGroup;
+  notiLog: INotiItem | null = {
+    type: NotiType['info'],
+    content: '',
+    read: true,
+    time: '',
+  };
   @ViewChild('notiList') notiList!: ElementRef;
   constructor(
     private titleService: Title,
@@ -55,9 +63,21 @@ export class AppComponent implements OnInit, AfterViewChecked {
             this.loginForm.reset();
           },
           error: (err) => {
-            console.log(err);
+            this.notiLog = {
+              type: NotiType['danger'],
+              content: 'Login failed! Your account maybe not exist!',
+              read: true,
+              time: '',
+            };
           },
         });
+    } else {
+      this.notiLog = {
+        type: NotiType['danger'],
+        content: 'Login failed! Please check your info again!',
+        read: true,
+        time: '',
+      };
     }
   }
   register() {
@@ -71,11 +91,30 @@ export class AppComponent implements OnInit, AfterViewChecked {
           next: (res) => {
             this.isLogin = true;
             this.registerForm.reset();
+            this.notiLog = {
+              type: NotiType['checked'],
+              content: 'Register successfully!',
+              read: true,
+              time: '',
+            };
           },
           error: (err) => {
-            console.log(err);
+            this.notiLog = {
+              type: NotiType['danger'],
+              content:
+                'Register failed! Try changing your usename and re-registering!',
+              read: true,
+              time: '',
+            };
           },
         });
+    } else {
+      this.notiLog = {
+        type: NotiType['danger'],
+        content: 'Regiter failed! Please check your info again!',
+        read: true,
+        time: '',
+      };
     }
   }
   matchPassword(): boolean {
@@ -88,5 +127,8 @@ export class AppComponent implements OnInit, AfterViewChecked {
       this.notiList.nativeElement.scrollTop =
         this.notiList.nativeElement.scrollHeight;
     } catch (err) {}
+  }
+  resetNotiLog() {
+    this.notiLog = null;
   }
 }

@@ -2,6 +2,7 @@ package com.ktl.server.user;
 
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -33,6 +34,7 @@ public class AppUser {
     private String userCode;
     @Enumerated(EnumType.STRING)
     private AppUserRole role;
+    @Column(unique = true)
     private String username;
     private String password;
     @OneToMany

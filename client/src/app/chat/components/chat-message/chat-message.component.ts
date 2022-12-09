@@ -40,12 +40,16 @@ export class ChatMessageComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {}
 
   openNewChat() {
-    this.conversationService.createNewTab({
-      id: null,
-      conversationCode: this.userMess.identityCode,
-      name: this.userMess.username,
-      unread: 0,
-      personal: true,
-    });
+    this.conversationService.createNewTab(
+      {
+        id: null,
+        conversationCode: this.userMess.identityCode,
+        name: this.userMess.username,
+        unread: 0,
+        personal: true,
+      },
+      true,
+      true
+    );
   }
 }

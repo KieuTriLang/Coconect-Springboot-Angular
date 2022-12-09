@@ -43,6 +43,16 @@
     <button type="button" class="button-switch" (click)="isLogin = !isLogin">
       {{isLogin ? "Register":"Login"}}
     </button>
+    <div
+      *ngIf="notiLog != null"
+      class="noti-login"
+      [class]="notiLog.type.name"
+      [class.active]="notiLog.content != ''"
+      (click)="resetNotiLog()"
+    >
+      <fa-icon [icon]="notiLog.type.icon" [size]="'1x'"></fa-icon>
+      <p>{{notiLog.content}}</p>
+    </div>
   </div>
 </ng-template>
 

@@ -75,7 +75,17 @@ export class ChatService {
       },
     ];
   }
-  unsubscribeRoom(roomCode: string) {}
+  unsubscribeRoom(roomCode: string) {
+    this.roomSubscriptions = this.roomSubscriptions.filter(
+      (roomSubscription) => {
+        if (roomSubscription.roomCode == roomCode) {
+          roomSubscription.subscription.unsubscribe();
+          return;
+        }
+        return roomSubscription;
+      }
+    );
+  }
 
   onError = (error: any) => {
     console.log(error);
