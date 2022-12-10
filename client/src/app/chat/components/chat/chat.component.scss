@@ -15,7 +15,7 @@
   border-radius: 5px;
   display: grid;
   grid-template-columns: 175px 1fr;
-  grid-template-rows: 1fr 60px;
+  grid-template-rows: 1fr 50px;
   gap: 5px;
   @include Responsive(SM) {
     grid-template-columns: 1fr;
@@ -48,6 +48,26 @@
     @include Responsive(SM) {
       border-radius: 0px;
     }
+    & .loading {
+      position: relative;
+      margin: 0 auto;
+      width: 30px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border-top: 3px solid rgba($color-1, 1);
+      border-bottom: 3px solid rgba($color-1, 1);
+      animation: loading 0.5s infinite linear;
+      &::after {
+        position: absolute;
+        content: "";
+        top: 50%;
+        left: 50%;
+        translate: -50% -50%;
+        width: 7.5px;
+        aspect-ratio: 1;
+        background: rgba($color-1, 1);
+      }
+    }
   }
   & app-chatbar {
     width: 100%;
@@ -58,5 +78,14 @@
       grid-area: 3 / 1 / span 1 / span 1;
       border-radius: 0 0 5px 5px;
     }
+  }
+}
+
+@keyframes loading {
+  0% {
+    rotate: 0deg;
+  }
+  100% {
+    rotate: 180deg;
   }
 }

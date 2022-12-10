@@ -18,6 +18,9 @@ public class MediaFileServiceImpl implements MediaFileService {
     @Override
     public String saveFile(MultipartFile file) throws IOException {
         // TODO Auto-generated method stub
+        if (file.getSize() > 500000000) {
+            throw new RuntimeException("File too big");
+        }
         MediaFile mediaFile = MediaFile.builder()
                 .code(UUID.randomUUID().toString())
                 .name(file.getName())
@@ -26,6 +29,12 @@ public class MediaFileServiceImpl implements MediaFileService {
                 .size(file.getSize())
                 .build();
         return mediaFileRepo.save(mediaFile).getCode();
+    }
+
+    @Override
+    public MediaFile getFileByFileCode(String fileCode) {
+        // TODO Auto-generated method stub
+        return mediaFileRepo.findByCode(fileCode).orElseThrow(() -> new RuntimeException("Not found file"));
     }
 
 }

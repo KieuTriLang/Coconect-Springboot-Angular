@@ -19,8 +19,8 @@ import {
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messageContainer') messC!: ElementRef;
-  userCode = '';
-
+  userCode: string = '';
+  scrolling: boolean = false;
   constructor(
     public chatService: ChatService,
     private authService: AuthService,
@@ -34,7 +34,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   ngOnDestroy(): void {}
 
   ngAfterViewChecked(): void {
-    this.scrollToBottom();
+    if (!this.scrolling) {
+      this.scrollToBottom();
+    }
   }
 
   ngOnInit(): void {
@@ -61,9 +63,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
   handleNewMessage = (message: IChatMessage) => {
     this.conversationService.add(message, false);
+    this.scrollToBottom();
   };
 
   handleTabChanged(conversationCode: string) {
+    this.scrolling = false;
     this.conversationService.changeTab(conversationCode);
   }
 
@@ -72,5 +76,19 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.messC.nativeElement.scrollTop =
         this.messC.nativeElement.scrollHeight;
     } catch (err) {}
+  }
+  handleScroll(e: any) {
+    this.scrolling = true;
+    const scrollHeight = e.target.scrollHeight;
+    const scrollTop = e.target.scrollTop;
+    const clientHeight = e.target.clientHeight;
+
+    if (this.conversationService.loading == false) {
+      if (scrollTop == 0) {
+        this.conversationService.loadMessageByConversationCode(
+          this.conversationService.currentTab
+        );
+      }
+    }
   }
 }

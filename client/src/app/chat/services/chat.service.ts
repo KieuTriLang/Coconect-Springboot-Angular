@@ -128,25 +128,35 @@ export class ChatService {
       if (receiverCode == 'public') {
         this.stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
       } else {
-        this.userService
-          .addPrivateConversation(
-            chatMessage.identityCode,
-            chatMessage.receiverCode
-          )
-          .subscribe({
-            next: (res) => {
-              this.stompClient.send(
-                '/app/message-private',
-                {},
-                JSON.stringify(chatMessage)
-              );
-              this.newMessage.next(chatMessage);
-            },
-            error: (err) => {
-              console.log(err);
-            },
-          });
+        if (toGroup) {
+          this.sendToGroup(chatMessage);
+        } else {
+          this.sendToUser(chatMessage);
+        }
       }
     }
   }
+
+  sendToUser(chatMessage: IChatMessage) {
+    this.userService
+      .addPrivateConversation(
+        chatMessage.identityCode,
+        chatMessage.receiverCode
+      )
+      .subscribe({
+        next: (res) => {
+          this.stompClient.send(
+            '/app/message-private',
+            {},
+            JSON.stringify(chatMessage)
+          );
+          this.newMessage.next(chatMessage);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
+  }
+
+  sendToGroup(chatMessage: IChatMessage) {}
 }

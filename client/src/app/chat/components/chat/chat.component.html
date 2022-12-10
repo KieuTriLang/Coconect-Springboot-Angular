@@ -4,7 +4,12 @@
     [currentTab]="conversationService.currentTab"
     (currentTabChanged)="handleTabChanged($event)"
   ></app-tab>
-  <div class="message-container" #messageContainer>
+  <div
+    class="message-container"
+    #messageContainer
+    (scroll)="handleScroll($event)"
+  >
+    <div class="loading" *ngIf="conversationService.loading"></div>
     <app-chat-message
       *ngFor="
         let userMess of conversationService.getByKey(
@@ -15,5 +20,8 @@
       [userMess]="userMess"
     ></app-chat-message>
   </div>
-  <app-chatbar [tabSelected]="conversationService.currentTab"></app-chatbar>
+  <app-chatbar
+    [tabSelected]="conversationService.currentTab"
+    [tabPersonal]="conversationService.tabPersonal"
+  ></app-chatbar>
 </div>

@@ -1,4 +1,39 @@
 <form class="chatbar" [formGroup]="form" (submit)="submit()">
+  <div class="attachment">
+    <div
+      class="attachment-icon"
+      [class.active]="attachmentOpen"
+      (click)="attachmentOpen = !attachmentOpen"
+    >
+      &plus;
+    </div>
+    <div class="attachment-list" [class.active]="attachmentOpen">
+      <div class="attachment-item">
+        <label for="image">
+          <fa-icon [icon]="imageIcon" [size]="'1x'"></fa-icon
+        ></label>
+        <input
+          type="file"
+          name="image"
+          id="image"
+          accept="image/*"
+          (change)="upload($event)"
+        />
+      </div>
+      <div class="attachment-item">
+        <label for="video">
+          <fa-icon [icon]="videoIcon" [size]="'1x'"></fa-icon
+        ></label>
+        <input
+          type="file"
+          name="video"
+          id="video"
+          accept="video/*"
+          (change)="upload($event)"
+        />
+      </div>
+    </div>
+  </div>
   <input
     type="text"
     placeholder="Text me . . ."

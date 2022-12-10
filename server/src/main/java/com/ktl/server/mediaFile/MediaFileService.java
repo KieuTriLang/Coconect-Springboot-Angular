@@ -7,4 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface MediaFileService {
 
     String saveFile(MultipartFile file) throws IOException;
+
+    MediaFile getFileByFileCode(String fileCode);
 }

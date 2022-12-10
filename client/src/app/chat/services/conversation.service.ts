@@ -10,6 +10,8 @@ import { IUserMess } from '../interfaces/user-mess';
   providedIn: 'root',
 })
 export class ConversationService {
+  loading: boolean = false;
+  tabPersonal: boolean = false;
   currentTab: string = 'public';
   tabs: IConversation[] = [
     {
@@ -69,20 +71,32 @@ export class ConversationService {
         { info: newTab, raw: raw, loadFirst: loadFirst },
       ];
       this.currentTab = newTab.conversationCode;
+      this.tabPersonal = newTab.personal;
     }
   }
   changeTab(conversationCode: string) {
     if (this.currentTab != conversationCode) {
       this.tabs = this.tabs.filter((tab) => tab.raw == false);
     }
-    this.currentTab = conversationCode;
-
+    this.loadMessageByConversationCode(conversationCode);
+  }
+  loadMessageByConversationCode(conversationCode: string) {
     const conversation: IConversation = this.tabs.filter(
       (tab) => tab.info.conversationCode == conversationCode
     )[0];
+
+    this.currentTab = conversation.info.conversationCode;
+    this.tabPersonal = conversation.info.personal;
+    this.loading = conversationCode != 'public';
+    const beforeId: number =
+      this.getByKey(conversationCode)[0]?.messages[0]?.id || 0;
     if (!conversation.loadFirst) {
-      const beforeId: number =
-        this.getByKey(conversationCode)[0]?.messages[0]?.id || 0;
+      this.loadMessages(
+        conversation.info.conversationCode,
+        beforeId,
+        conversation.info.personal
+      );
+    } else if (conversation.info.conversationCode != 'public') {
       this.loadMessages(
         conversation.info.conversationCode,
         beforeId,
@@ -98,6 +112,7 @@ export class ConversationService {
           res.forEach((message) => {
             this.add(message, true);
           });
+          this.loading = false;
         },
         error: (err) => {
           console.log(err);
@@ -109,6 +124,7 @@ export class ConversationService {
           res.forEach((message) => {
             this.add(message, true);
           });
+          this.loading = false;
         },
         error: (err) => {
           console.log(err);
@@ -120,7 +136,6 @@ export class ConversationService {
         ? { ...conversation, loadFirst: true }
         : conversation
     );
-    console.log(this.tabs);
   }
 
   getByKey(key: string): IUserMess[] {
