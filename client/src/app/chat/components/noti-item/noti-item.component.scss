@@ -1,39 +1,71 @@
 @use "src/variable" as *;
 .noti-item {
+  margin-bottom: 5px;
+  padding: 5px;
+  position: relative;
   width: 100%;
+  max-width: 300px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 5px;
+  border: 2px solid $color-1;
   & .icon {
-    width: 100%;
-    aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: $color-white;
     font-size: 2.4rem;
     border-radius: 5px;
     cursor: pointer;
-    &.info {
-      background: rgba(#47b5ff, 0.85);
-      &:hover {
-        background: rgba(#47b5ff, 0.65);
+  }
+  & .content {
+    display: flex;
+    flex-flow: column;
+    gap: 5px;
+    & .text {
+      font-size: 1.2rem;
+    }
+    & .action {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+      gap: 10px;
+      &-item {
+        width: 20px;
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        cursor: pointer;
+        border-radius: 5px;
+        &:hover {
+          background: rgba($color-black, 0.1);
+        }
+      }
+      & .time {
+        margin: 0 auto 0 0;
       }
     }
-    &.checked {
-      background: rgba(#6eccaf, 0.85);
-      &:hover {
-        background: rgba(#6eccaf, 0.65);
-      }
-    }
-    &.danger {
-      background: rgba(#e94560, 0.85);
-      &:hover {
-        background: rgba(#e94560, 0.65);
-      }
-    }
-    &.invite {
-      background: rgba(#e94560, 0.85);
-      &:hover {
-        background: rgba(#e94560, 0.65);
+    & .result-action {
+      display: flex;
+      justify-content: space-between;
+      & p {
+        font-size: 0.75rem;
       }
     }
   }
+}
+
+.info,
+.invite {
+  color: rgba(#47b5ff, 1);
+}
+.checked,
+.accept {
+  color: rgba(#6eccaf, 1);
+}
+.danger,
+.deny {
+  color: rgba(#e94560, 1);
 }

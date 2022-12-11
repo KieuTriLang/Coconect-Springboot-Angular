@@ -1,3 +1,4 @@
+import { INotification } from './../interfaces/notification';
 import { IChatMessage } from './../interfaces/chat-message';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -34,6 +35,11 @@ export class UserService {
   getConversations(): Observable<IConversation> {
     return this.http.get<IConversation>(
       `${this.REST_API}${this.VERSION}/users/conversations`
+    );
+  }
+  getNotificatons(): Observable<INotification[]> {
+    return this.http.get<INotification[]>(
+      `${this.REST_API}${this.VERSION}/notifications/user`
     );
   }
 

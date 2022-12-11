@@ -10,10 +10,20 @@
   >
     Logout
   </button>
-  <!-- <div class="noti-list" #notiList *ngIf="authService.authenticated$ | async">
-    <app-noti-item></app-noti-item>
-    <app-noti-item></app-noti-item>
-  </div> -->
+  <div class="notification" *ngIf="authService.authenticated$ | async">
+    <div
+      class="notification-icon"
+      (click)="notificationOpen = !notificationOpen"
+    >
+      <fa-icon [icon]="notificationIcon" [size]="'1x'"></fa-icon>
+    </div>
+    <div class="notification-list" [class.active]="notificationOpen">
+      <app-noti-item
+        *ngFor="let notiItem of notificationService.notiList"
+        [noti]="notiItem"
+      ></app-noti-item>
+    </div>
+  </div>
 </div>
 
 <ng-template #loginTemp>

@@ -42,8 +42,8 @@ public class MediaFileController {
     public ResponseEntity<Object> saveFile(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
             @RequestPart(required = false) MultipartFile file) throws IOException {
-
-        return ResponseEntity.ok(mediaFileService.saveFile(file));
+        MediaFile f = mediaFileService.saveFile(file);
+        return ResponseEntity.ok(MediaFileResponse.builder().fileCode(f.getCode()).type(f.getType()).build());
     }
 
     @GetMapping("/image/{fileCode}/download")
@@ -60,12 +60,12 @@ public class MediaFileController {
         return ResponseEntity.ok().contentType(mediaType).body(new InputStreamResource(is));
     }
 
-    @PostMapping(value = "/video", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @PostMapping(value = "/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> saveVideo(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
             @RequestPart(required = false) MultipartFile file) throws IOException {
-
-        return ResponseEntity.ok(mediaFileService.saveFile(file));
+        MediaFile f = mediaFileService.saveFile(file);
+        return ResponseEntity.ok(MediaFileResponse.builder().fileCode(f.getCode()).type(f.getType()).build());
     }
 
     @GetMapping("/video/{fileCode}/download")

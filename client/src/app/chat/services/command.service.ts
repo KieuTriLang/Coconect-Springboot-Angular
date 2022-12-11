@@ -8,7 +8,7 @@ interface IObjectKeys {
   [key: string]: ICommandRegex;
 }
 interface ICommandRegex {
-  regex: string;
+  regex: RegExp;
   action: (room: IRoomRequest) => void;
 }
 @Injectable({
@@ -22,15 +22,28 @@ export class CommandService {
     private conversationService: ConversationService
   ) {
     this.prefixCommandRegex = {
-      createRoom: { regex: `^\/CreateRoom:`, action: this.createRoom },
-      addMember: { regex: `^\/AddMember:`, action: this.addMember },
-      removeMember: { regex: `^\/RemoveMember:`, action: this.removeMember },
-      leaveRoom: { regex: `\/LeaveRoom:`, action: this.leaveRoom },
+      createRoom: {
+        regex: new RegExp(`^\/CreateRoom:`),
+        action: this.createRoom,
+      },
+      addMember: { regex: new RegExp(`^\/AddMember:`), action: this.addMember },
+      removeMember: {
+        regex: new RegExp(`^\/RemoveMember:`),
+        action: this.removeMember,
+      },
+      leaveRoom: { regex: new RegExp(`\/LeaveRoom:`), action: this.leaveRoom },
     };
   }
 
   checkAllPrefixCommand(text: string): boolean {
-    return new RegExp(this.mergePrefixCommandRegex(), 'i').test(text);
+    for (const key in this.prefixCommandRegex) {
+      if (Object.prototype.hasOwnProperty.call(this.prefixCommandRegex, key)) {
+        if (!this.prefixCommandRegex[key].regex.test(text)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   checkSpecificedPrefixComman(text: string, prefixCommand: string): boolean {
@@ -38,21 +51,28 @@ export class CommandService {
   }
 
   removeAllPrefix(text: string): string {
-    return text.replace(new RegExp(this.mergePrefixCommandRegex(), 'i'), '');
-  }
-
-  mergePrefixCommandRegex(): string {
-    let regex = '';
-    let lastKey = Object.keys(this.prefixCommandRegex).pop();
     for (const key in this.prefixCommandRegex) {
       if (Object.prototype.hasOwnProperty.call(this.prefixCommandRegex, key)) {
-        const element = this.prefixCommandRegex[key].regex;
-
-        regex += key == lastKey ? `${element}` : `${element}|`;
+        if (!this.prefixCommandRegex[key].regex.test(text)) {
+          text.replace(this.prefixCommandRegex[key].regex, '');
+        }
       }
     }
-    return regex;
+    return text;
   }
+
+  // mergePrefixCommandRegex(): string {
+  //   let regex = '';
+  //   let lastKey = Object.keys(this.prefixCommandRegex).pop();
+  //   for (const key in this.prefixCommandRegex) {
+  //     if (Object.prototype.hasOwnProperty.call(this.prefixCommandRegex, key)) {
+  //       const element = this.prefixCommandRegex[key].regex;
+
+  //       regex += key == lastKey ? `${element}` : `${element}|`;
+  //     }
+  //   }
+  //   return regex;
+  // }
   createRoom = ({ roomName }: IRoomRequest) => {
     this.roomService.createRoom(roomName).subscribe({
       next: (res) => {

@@ -64,31 +64,28 @@ export class ChatbarComponent implements OnInit {
       return;
     }
     switch (true) {
-      case new RegExp(createRoom.regex, 'i').test(text):
+      case createRoom.regex.test(text):
         createRoom.action({
           roomCode: '',
           roomName: nameList.join(' '),
           members: [],
         });
         break;
-      case new RegExp(addMember.regex, 'i').test(text) &&
-        this.tabSelected != 'public':
+      case addMember.regex.test(text) && this.tabSelected != 'public':
         addMember.action({
           roomCode: this.tabSelected,
           roomName: '',
           members: nameList,
         });
         break;
-      case new RegExp(removeMember.regex, 'i').test(text) &&
-        this.tabSelected != 'public':
+      case removeMember.regex.test(text) && this.tabSelected != 'public':
         removeMember.action({
           roomCode: '1234',
           roomName: '',
           members: nameList,
         });
         break;
-      case new RegExp(leaveRoom.regex, 'i').test(text) &&
-        this.tabSelected != 'public':
+      case leaveRoom.regex.test(text) && this.tabSelected != 'public':
         leaveRoom.action({
           roomCode: '1234',
           roomName: '',
@@ -115,9 +112,10 @@ export class ChatbarComponent implements OnInit {
             next: (res) => {
               this.chatService.sendMessage(
                 this.tabSelected,
-                this.messageService.transformFile(res, file?.type),
+                this.messageService.transformFile(res.fileCode, res.type),
                 !this.tabPersonal
               );
+              this.attachmentOpen = false;
             },
             error: (err) => {
               console.log(err);
@@ -131,9 +129,10 @@ export class ChatbarComponent implements OnInit {
             next: (res) => {
               this.chatService.sendMessage(
                 this.tabSelected,
-                this.messageService.transformFile(res, file?.type),
+                this.messageService.transformFile(res.fileCode, res.type),
                 !this.tabPersonal
               );
+              this.attachmentOpen = false;
             },
             error: (err) => {
               console.log(err);

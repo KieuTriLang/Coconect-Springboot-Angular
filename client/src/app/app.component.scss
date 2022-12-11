@@ -4,9 +4,6 @@
   position: relative;
   width: 100%;
   height: 100%;
-  display: grid;
-  grid-template-columns: 1fr 50px;
-  gap: 20px;
   overflow: hidden;
   & .login {
     position: absolute;
@@ -136,17 +133,75 @@
       text-decoration: underline;
     }
   }
-  & .noti-list {
-    height: 100%;
-    border: 2px solid rgba($color-1, 1);
-    border-radius: 5px;
-    padding: 5px;
-    display: flex;
-    flex-flow: column;
-    gap: 5px;
-    overflow-y: auto;
-    &::-webkit-scrollbar {
+  & .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    aspect-ratio: 1;
+    &-icon {
+      position: relative;
+      margin: 0 0 10px auto;
+      width: 35px;
+      aspect-ratio: 1;
+      font-size: 2.8rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      // border: 2px solid $color-1;
+      background: $color-4;
+      cursor: pointer;
+      &::before {
+        position: absolute;
+        content: "";
+        inset: -10%;
+        background: linear-gradient(
+          to right,
+          rgba($color-2, 0.5),
+          rgba($color-1, 0.5)
+        );
+        border-radius: 50%;
+        z-index: -1;
+        transition: all linear 0.5s;
+      }
+      &:hover::before {
+        rotate: 360deg;
+      }
+      // &::after {
+      //   position: absolute;
+      //   content: "99";
+      //   top: -20%;
+      //   right: -20%;
+      //   width: 15px;
+      //   aspect-ratio: 1;
+      //   font-size: 0.625rem;
+      //   display: flex;
+      //   justify-content: center;
+      //   align-items: center;
+      //   border-radius: 50%;
+      //   border: 2px solid $color-white;
+      //   color: $color-white;
+      //   background: $color-black;
+      // }
+    }
+    &-list {
+      padding: 5px;
+      height: 300px;
+      overflow-y: auto;
       display: none;
+      border-radius: 5px;
+      border: 2px solid $color-1;
+      background: linear-gradient(
+        to right,
+        rgba($color-2, 0.5),
+        rgba($color-1, 0.5)
+      );
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      &.active {
+        display: block;
+      }
     }
   }
 }

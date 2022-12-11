@@ -13,6 +13,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import com.ktl.server.conversation.Conversation;
+import com.ktl.server.notification.Notification;
 import com.ktl.server.room.Room;
 import com.ktl.server.security.AppUserRole;
 
@@ -39,5 +40,7 @@ public class AppUser {
     private String password;
     @OneToMany
     private Set<Conversation> conversations;
+    @OneToMany
+    private Set<Notification> notifications;
 
 }

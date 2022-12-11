@@ -8,6 +8,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -55,6 +56,7 @@ public class AppSecurityConfig {
                 .addFilterAfter(new JwtAuthorizationVerifier(jwtConfig), JwtAuthenticationFilter.class)
                 .authorizeHttpRequests()
                 .antMatchers("/ws/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/media-file/**").permitAll()
                 .antMatchers("/api/v1/users/login", "/api/v1/users/token/refresh", "/api/v1/users/register", "/")
                 .permitAll()
                 .anyRequest()

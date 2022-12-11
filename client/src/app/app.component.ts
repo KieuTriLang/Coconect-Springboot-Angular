@@ -1,3 +1,5 @@
+import { NotificationService } from './chat/services/notification.service';
+import { UserService } from './chat/services/user.service';
 import { NotiType } from './chat/data/noti-type.data';
 import { INotiItem } from './chat/interfaces/noti-item';
 import { StorageService } from './chat/services/storage.service';
@@ -11,27 +13,32 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { faBell } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit, AfterViewChecked {
+export class AppComponent implements OnInit {
   isLogin = true;
   loginForm!: FormGroup;
   registerForm!: FormGroup;
+
+  notificationIcon = faBell;
+  notificationOpen = false;
   notiLog: INotiItem | null = {
     type: NotiType['info'],
     content: '',
-    read: true,
+    roomCode: '',
+    status: '',
     time: '',
   };
-  @ViewChild('notiList') notiList!: ElementRef;
   constructor(
     private titleService: Title,
     public authService: AuthService,
     private storageService: StorageService,
+    public notificationService: NotificationService,
     private fb: FormBuilder
   ) {
     this.titleService.setTitle('Coconect chat');
@@ -46,9 +53,6 @@ export class AppComponent implements OnInit, AfterViewChecked {
     });
   }
   ngOnInit(): void {}
-  ngAfterViewChecked(): void {
-    this.scrollToBottom();
-  }
   login() {
     if (this.loginForm.valid) {
       this.authService
@@ -66,7 +70,8 @@ export class AppComponent implements OnInit, AfterViewChecked {
             this.notiLog = {
               type: NotiType['danger'],
               content: 'Login failed! Your account maybe not exist!',
-              read: true,
+              roomCode: '',
+              status: '',
               time: '',
             };
           },
@@ -75,7 +80,8 @@ export class AppComponent implements OnInit, AfterViewChecked {
       this.notiLog = {
         type: NotiType['danger'],
         content: 'Login failed! Please check your info again!',
-        read: true,
+        roomCode: '',
+        status: '',
         time: '',
       };
     }
@@ -94,7 +100,8 @@ export class AppComponent implements OnInit, AfterViewChecked {
             this.notiLog = {
               type: NotiType['checked'],
               content: 'Register successfully!',
-              read: true,
+              roomCode: '',
+              status: '',
               time: '',
             };
           },
@@ -103,7 +110,8 @@ export class AppComponent implements OnInit, AfterViewChecked {
               type: NotiType['danger'],
               content:
                 'Register failed! Try changing your usename and re-registering!',
-              read: true,
+              roomCode: '',
+              status: '',
               time: '',
             };
           },
@@ -112,7 +120,8 @@ export class AppComponent implements OnInit, AfterViewChecked {
       this.notiLog = {
         type: NotiType['danger'],
         content: 'Regiter failed! Please check your info again!',
-        read: true,
+        roomCode: '',
+        status: '',
         time: '',
       };
     }
@@ -121,12 +130,6 @@ export class AppComponent implements OnInit, AfterViewChecked {
     return (
       this.registerForm.value.password == this.registerForm.value.rePassword
     );
-  }
-  scrollToBottom() {
-    try {
-      this.notiList.nativeElement.scrollTop =
-        this.notiList.nativeElement.scrollHeight;
-    } catch (err) {}
   }
   resetNotiLog() {
     this.notiLog = null;

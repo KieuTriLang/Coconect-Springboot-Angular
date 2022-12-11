@@ -1,5 +1,7 @@
 package com.ktl.server.room;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -18,6 +20,8 @@ import com.ktl.server.chat.Message;
 import com.ktl.server.chat.Status;
 import com.ktl.server.conversation.Conversation;
 import com.ktl.server.conversation.ConversationRepo;
+import com.ktl.server.notification.Notification;
+import com.ktl.server.notification.NotificationRepo;
 import com.ktl.server.user.AppUser;
 import com.ktl.server.user.UserRepo;
 
@@ -33,6 +37,8 @@ public class RoomServiceImpl implements RoomService {
     private final UserRepo userRepo;
     @Autowired
     private final ConversationRepo conversationRepo;
+    @Autowired
+    private final NotificationRepo notificationRepo;
     @Autowired
     private final ModelMapper modelMapper;
 
@@ -76,15 +82,22 @@ public class RoomServiceImpl implements RoomService {
         // TODO Auto-generated method stub
         List<String> userCodes = new ArrayList<>();
         Room room = roomRepo.findByRoomCode(roomCode).orElseThrow(() -> new RuntimeException("Not room found"));
+        String content = room.getCreator() + " invite you to join room: " + room.getRoomName();
         for (String username : usernames) {
             AppUser user = userRepo.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Not found user: " + username));
             room.getMembers().add(user);
+            notificationRepo.save(Notification.builder()
+                    .content(content)
+                    .roomCode(roomCode)
+                    .status(Status.INVITE)
+                    .time(ZonedDateTime.now(ZoneId.of("z")).toString()).receiver(user)
+                    .build());
             userCodes.add(user.getUserCode());
         }
         Message message = Message.builder()
                 .identityCode(roomCode)
-                .content("You have an invitation from " + room.getRoomName())
+                .content(content)
                 .status(Status.INVITE)
                 .build();
         for (String userCode : userCodes) {

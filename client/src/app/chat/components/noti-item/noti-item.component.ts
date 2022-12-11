@@ -1,6 +1,7 @@
 import { NotiType } from './../../data/noti-type.data';
 import { INotiItem } from './../../interfaces/noti-item';
 import { Component, Input, OnInit } from '@angular/core';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-noti-item',
@@ -11,10 +12,17 @@ export class NotiItemComponent implements OnInit {
   @Input() noti: INotiItem = {
     type: NotiType['invite'],
     content: '',
-    read: true,
+    roomCode: '',
+    status: '',
     time: '',
   };
+
+  acceptIcon = faCheck;
+  denyIcon = faTimes;
   constructor() {}
 
   ngOnInit(): void {}
+
+  accept(roomCode: string) {}
+  deny(roomCode: string) {}
 }

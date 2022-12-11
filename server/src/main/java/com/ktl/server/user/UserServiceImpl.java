@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -23,6 +24,8 @@ import com.ktl.server.conversation.Conversation;
 import com.ktl.server.conversation.ConversationRepo;
 import com.ktl.server.conversation.ConversationResponse;
 import com.ktl.server.home.RegisterRequest;
+import com.ktl.server.notification.Notification;
+
 import static com.ktl.server.security.AppUserRole.*;
 
 import lombok.AllArgsConstructor;
@@ -125,6 +128,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         userRepo.save(sender);
+    }
+
+    @Override
+    public Set<Notification> getNotificationByUsername(String username) {
+        // TODO Auto-generated method stub
+        AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("Not found user"));
+        return user.getNotifications();
     }
 
 }
