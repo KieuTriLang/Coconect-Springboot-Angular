@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,6 +58,24 @@ public class UserController {
 
         userService.addPrivateConversation(receiverCode, senderCode);
 
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/room/{roomCode}/invite")
+    public ResponseEntity<Object> acceptInvite(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+            @PathVariable String roomCode) {
+        String username = authorizationHeaderHelper.getSub(authorizationHeader);
+        userService.acceptInvite(username, roomCode);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/room/{roomCode}/invite")
+    public ResponseEntity<Object> denyInvite(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+            @PathVariable String roomCode) {
+        String username = authorizationHeaderHelper.getSub(authorizationHeader);
+        userService.denyInvite(username, roomCode);
         return ResponseEntity.ok().build();
     }
 }

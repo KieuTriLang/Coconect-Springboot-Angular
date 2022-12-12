@@ -21,6 +21,7 @@ export class RoomService {
     const params = new HttpParams().set('usernames', memberNames.toString());
     return this.http.post<any>(
       `${this.REST_API}${this.VERSION}/rooms/${roomCode}/members`,
+      null,
       { params: params }
     );
   }

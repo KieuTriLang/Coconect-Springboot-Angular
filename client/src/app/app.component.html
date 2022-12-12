@@ -13,15 +13,20 @@
   <div class="notification" *ngIf="authService.authenticated$ | async">
     <div
       class="notification-icon"
-      (click)="notificationOpen = !notificationOpen"
+      (click)="openNoti()"
+      [class.new-noti]="notificationService.newNoti$ | async"
     >
       <fa-icon [icon]="notificationIcon" [size]="'1x'"></fa-icon>
     </div>
     <div class="notification-list" [class.active]="notificationOpen">
       <app-noti-item
-        *ngFor="let notiItem of notificationService.notiList"
+        *ngFor="let notiItem of notificationService.notiList; let i = index"
         [noti]="notiItem"
+        [index]="i"
       ></app-noti-item>
+      <p *ngIf="notificationService.notiList.length == 0" class="no-noti">
+        No notifications for you
+      </p>
     </div>
   </div>
 </div>
@@ -51,7 +56,7 @@
       <button type="submit">Login</button>
     </form>
     <button type="button" class="button-switch" (click)="isLogin = !isLogin">
-      {{isLogin ? "Register":"Login"}}
+      {{ isLogin ? "Register" : "Login" }}
     </button>
     <div
       *ngIf="notiLog != null"
@@ -61,7 +66,7 @@
       (click)="resetNotiLog()"
     >
       <fa-icon [icon]="notiLog.type.icon" [size]="'1x'"></fa-icon>
-      <p>{{notiLog.content}}</p>
+      <p>{{ notiLog.content }}</p>
     </div>
   </div>
 </ng-template>

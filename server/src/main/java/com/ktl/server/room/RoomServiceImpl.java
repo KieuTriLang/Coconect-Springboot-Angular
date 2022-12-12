@@ -86,17 +86,19 @@ public class RoomServiceImpl implements RoomService {
         for (String username : usernames) {
             AppUser user = userRepo.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Not found user: " + username));
-            room.getMembers().add(user);
+            // room.getMembers().add(user);
             notificationRepo.save(Notification.builder()
                     .content(content)
                     .roomCode(roomCode)
+                    .roomName(room.getRoomName())
                     .status(Status.INVITE)
-                    .time(ZonedDateTime.now(ZoneId.of("z")).toString()).receiver(user)
+                    .time(ZonedDateTime.now(ZoneId.of("Z")).toString()).receiver(user)
                     .build());
             userCodes.add(user.getUserCode());
         }
         Message message = Message.builder()
                 .identityCode(roomCode)
+                .senderName(room.getRoomName())
                 .content(content)
                 .status(Status.INVITE)
                 .build();

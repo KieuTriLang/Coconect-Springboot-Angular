@@ -36,6 +36,8 @@ export class ConversationService {
       if (state) {
         this.userService.getInfo().subscribe({
           next: (res) => {
+            this.tabs = [this.tabs[0]];
+
             this.conversations.set('public', []);
             if (res.conversations.length > 0) {
               res.conversations.forEach((tab) => {
@@ -67,11 +69,17 @@ export class ConversationService {
       newTab.conversationCode != this.chatService.userData.identityCode
     ) {
       this.tabs = [
-        ...this.tabs,
+        this.tabs[0],
         { info: newTab, raw: raw, loadFirst: loadFirst },
+        ...this.tabs.slice(1),
       ];
-      this.currentTab = newTab.conversationCode;
+      if (raw) {
+        this.currentTab = newTab.conversationCode;
+      }
       this.tabPersonal = newTab.personal;
+      if (newTab.personal == false) {
+        this.chatService.subscribeRoom(newTab.conversationCode);
+      }
     }
   }
   changeTab(conversationCode: string) {
@@ -153,6 +161,13 @@ export class ConversationService {
       this.setToKey(
         'public',
         this.addPublicMess(publicConversation, chatMessage, fromServer)
+      );
+    } else if (chatMessage.toRoom) {
+      var roomConversation: IUserMess[] =
+        this.conversations.get(chatMessage.receiverCode) || [];
+      this.setToKey(
+        chatMessage.receiverCode,
+        this.addPublicMess(roomConversation, chatMessage, fromServer)
       );
     } else {
       var conversationCode = '';

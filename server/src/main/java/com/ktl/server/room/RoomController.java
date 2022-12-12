@@ -42,14 +42,16 @@ public class RoomController {
     }
 
     @PostMapping("/{roomCode}/members")
-    public ResponseEntity<Object> addMembers(@PathVariable String roomCode, @RequestParam List<String> usernames) {
+    public ResponseEntity<Object> addMembers(@PathVariable String roomCode,
+            @RequestParam List<String> usernames) {
         roomService.addMembers(roomCode, usernames);
 
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{roomCode}/members")
-    public ResponseEntity<Object> removeMembers(@PathVariable String roomCode, @RequestParam List<String> usernames) {
+    public ResponseEntity<Object> removeMembers(@PathVariable String roomCode,
+            @RequestParam List<String> usernames) {
         roomService.removeMembers(roomCode, usernames);
         return ResponseEntity.ok().build();
     }

@@ -63,4 +63,16 @@ export class UserService {
       { params: params }
     );
   }
+
+  acceptInvite(roomCode: string): Observable<any> {
+    return this.http.post<any>(
+      `${this.REST_API}${this.VERSION}/users/room/${roomCode}/invite`,
+      null
+    );
+  }
+  denyInvite(roomCode: string): Observable<any> {
+    return this.http.delete<any>(
+      `${this.REST_API}${this.VERSION}/users/room/${roomCode}/invite`
+    );
+  }
 }

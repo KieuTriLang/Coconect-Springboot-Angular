@@ -20,11 +20,15 @@ import org.springframework.stereotype.Service;
 
 import com.ktl.server.chat.Message;
 import com.ktl.server.chat.MessageRepo;
+import com.ktl.server.chat.Status;
 import com.ktl.server.conversation.Conversation;
 import com.ktl.server.conversation.ConversationRepo;
 import com.ktl.server.conversation.ConversationResponse;
 import com.ktl.server.home.RegisterRequest;
 import com.ktl.server.notification.Notification;
+import com.ktl.server.notification.NotificationRepo;
+import com.ktl.server.room.Room;
+import com.ktl.server.room.RoomRepo;
 
 import static com.ktl.server.security.AppUserRole.*;
 
@@ -44,7 +48,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final ConversationRepo conversationRepo;
     @Autowired
     private final MessageRepo messageRepo;
-
+    @Autowired
+    private final RoomRepo roomRepo;
+    @Autowired
+    private final NotificationRepo notificationRepo;
     @Autowired
     private final ModelMapper modelMapper;
 
@@ -133,8 +140,42 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public Set<Notification> getNotificationByUsername(String username) {
         // TODO Auto-generated method stub
-        AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("Not found user"));
-        return user.getNotifications();
+        // AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new
+        // RuntimeException("Not found user"));
+        // Set<Notification> notifications = user.getNotifications();
+        return notificationRepo.findByReceiverUsername(username);
+    }
+
+    @Override
+    public void acceptInvite(String username, String roomCode) {
+        // TODO Auto-generated method stub
+        Notification notification = notificationRepo.findByReceiverUsernameAndRoomCode(username, roomCode)
+                .orElseThrow(() -> new RuntimeException("Error"));
+        Room room = roomRepo.findByRoomCode(roomCode).orElseThrow(() -> new RuntimeException("Error"));
+        AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("Error"));
+
+        notification.setStatus(Status.ACCEPT);
+        notificationRepo.save(notification);
+        Conversation conversation = conversationRepo.save((Conversation.builder().conversationCode(roomCode)
+                .name(room.getRoomName())
+                .unread(0).personal(false)
+                .build()));
+        user.getConversations().add(conversation);
+        room.getMembers().add(user);
+
+        roomRepo.save(room);
+        userRepo.save(user);
+    }
+
+    @Override
+    public void denyInvite(String username, String roomCode) {
+        // TODO Auto-generated method stub
+        Notification notification = notificationRepo.findByReceiverUsernameAndRoomCode(username, roomCode)
+                .orElseThrow(() -> new RuntimeException("Error"));
+
+        notification.setStatus(Status.DENY);
+        notificationRepo.save(notification);
+
     }
 
 }

@@ -35,10 +35,10 @@ export class CommandService {
     };
   }
 
-  checkAllPrefixCommand(text: string): boolean {
+  notPrefixCommand(text: string): boolean {
     for (const key in this.prefixCommandRegex) {
       if (Object.prototype.hasOwnProperty.call(this.prefixCommandRegex, key)) {
-        if (!this.prefixCommandRegex[key].regex.test(text)) {
+        if (this.prefixCommandRegex[key].regex.test(text)) {
           return false;
         }
       }
@@ -53,8 +53,8 @@ export class CommandService {
   removeAllPrefix(text: string): string {
     for (const key in this.prefixCommandRegex) {
       if (Object.prototype.hasOwnProperty.call(this.prefixCommandRegex, key)) {
-        if (!this.prefixCommandRegex[key].regex.test(text)) {
-          text.replace(this.prefixCommandRegex[key].regex, '');
+        if (this.prefixCommandRegex[key].regex.test(text)) {
+          text = text.replace(this.prefixCommandRegex[key].regex, '');
         }
       }
     }

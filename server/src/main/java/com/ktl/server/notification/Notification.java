@@ -28,6 +28,7 @@ public class Notification {
     private Long id;
     private String content;
     private String roomCode;
+    private String roomName;
     @Enumerated(EnumType.STRING)
     private Status status;
     private String time;

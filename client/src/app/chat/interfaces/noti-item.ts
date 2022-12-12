@@ -3,6 +3,7 @@ export interface INotiItem {
   type: INotiType;
   content: string;
   roomCode: string;
+  roomName: string;
   status: string;
   time: string;
 }

@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
     type: NotiType['info'],
     content: '',
     roomCode: '',
+    roomName: '',
     status: '',
     time: '',
   };
@@ -71,6 +72,7 @@ export class AppComponent implements OnInit {
               type: NotiType['danger'],
               content: 'Login failed! Your account maybe not exist!',
               roomCode: '',
+              roomName: '',
               status: '',
               time: '',
             };
@@ -81,6 +83,7 @@ export class AppComponent implements OnInit {
         type: NotiType['danger'],
         content: 'Login failed! Please check your info again!',
         roomCode: '',
+        roomName: '',
         status: '',
         time: '',
       };
@@ -101,6 +104,7 @@ export class AppComponent implements OnInit {
               type: NotiType['checked'],
               content: 'Register successfully!',
               roomCode: '',
+              roomName: '',
               status: '',
               time: '',
             };
@@ -111,6 +115,7 @@ export class AppComponent implements OnInit {
               content:
                 'Register failed! Try changing your usename and re-registering!',
               roomCode: '',
+              roomName: '',
               status: '',
               time: '',
             };
@@ -121,6 +126,7 @@ export class AppComponent implements OnInit {
         type: NotiType['danger'],
         content: 'Regiter failed! Please check your info again!',
         roomCode: '',
+        roomName: '',
         status: '',
         time: '',
       };
@@ -133,5 +139,9 @@ export class AppComponent implements OnInit {
   }
   resetNotiLog() {
     this.notiLog = null;
+  }
+  openNoti() {
+    this.notificationOpen = !this.notificationOpen;
+    this.notificationService.newNoti.next(false);
   }
 }

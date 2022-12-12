@@ -46,7 +46,7 @@ export class ChatbarComponent implements OnInit {
   submit() {
     if (this.form.valid) {
       const text = this.form.value.message;
-      if (this.commandService.checkAllPrefixCommand(text)) {
+      if (!this.commandService.notPrefixCommand(text)) {
         this.handleCommand(text);
       } else {
         this.chatService.sendMessage(this.tabSelected, text, !this.tabPersonal);

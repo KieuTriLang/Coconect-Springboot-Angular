@@ -19,6 +19,9 @@
       [userCode]="userCode"
       [userMess]="userMess"
     ></app-chat-message>
+    <div class="typing" *ngIf="chatService.typing">
+      <span></span><span></span><span></span>
+    </div>
   </div>
   <app-chatbar
     [tabSelected]="conversationService.currentTab"

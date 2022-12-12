@@ -1,3 +1,4 @@
+import { NotiType } from './../data/noti-type.data';
 import { IRoomSubscription } from './../interfaces/room-subscription';
 import { BehaviorSubject } from 'rxjs';
 import { UserService } from './user.service';
@@ -10,6 +11,7 @@ import * as SockJS from 'sockjs-client';
 import { environment } from 'src/environments/environment';
 import { Client, Message, over, Subscription } from 'stompjs';
 import { Subject } from 'rxjs';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +26,8 @@ export class ChatService {
   };
   stompClient!: Client;
 
+  typing: boolean = false;
+
   newMessage = new Subject<IChatMessage>();
   newMessage$ = this.newMessage.asObservable();
 
@@ -34,6 +38,7 @@ export class ChatService {
   constructor(
     private messageService: MessageService,
     private storageService: StorageService,
+    private notificationService: NotificationService,
     private userService: UserService
   ) {}
 
@@ -58,7 +63,7 @@ export class ChatService {
     this.stompClient.subscribe('/chatroom/public', this.onMessageReceived);
     this.stompClient.subscribe(
       '/user/' + this.userData.identityCode + '/private',
-      this.onPrivateMessage
+      this.onPrivateReceived
     );
     this.connected.next(true);
   };
@@ -99,20 +104,42 @@ export class ChatService {
     this.stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
   }
   onMessageReceived = (payload: Message) => {
-    var payloadData = JSON.parse(payload.body);
+    var payloadData: IChatMessage = JSON.parse(payload.body);
     switch (payloadData.status) {
       case 'JOIN':
         break;
       case 'MESSAGE':
         this.newMessage.next(payloadData);
         break;
+      case 'INVITE':
+        break;
+      case 'TYPING':
+        break;
     }
   };
-  onPrivateMessage = (payload: Message) => {
-    var payloadData = JSON.parse(payload.body);
-    this.newMessage.next(payloadData);
+  onPrivateReceived = (payload: Message) => {
+    var payloadData: IChatMessage = JSON.parse(payload.body);
+    switch (payloadData.status) {
+      case 'JOIN':
+        break;
+      case 'MESSAGE':
+        this.newMessage.next(payloadData);
+        break;
+      case 'INVITE':
+        this.notificationService.newNoti.next(true);
+        this.notificationService.createNewNoti({
+          type: NotiType['invite'],
+          content: payloadData.content,
+          roomCode: payloadData.identityCode,
+          roomName: payloadData.senderName,
+          status: payloadData.status,
+          time: payloadData.postedTime,
+        });
+        break;
+      case 'TYPING':
+        break;
+    }
   };
-
   sendMessage(receiverCode: string, message: string, toGroup: boolean) {
     if (this.stompClient) {
       var chatMessage: IChatMessage = {
@@ -158,5 +185,7 @@ export class ChatService {
       });
   }
 
-  sendToGroup(chatMessage: IChatMessage) {}
+  sendToGroup(chatMessage: IChatMessage) {
+    this.stompClient.send('/app/message-room', {}, JSON.stringify(chatMessage));
+  }
 }
