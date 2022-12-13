@@ -18,7 +18,7 @@ public class MediaFileServiceImpl implements MediaFileService {
     @Override
     public MediaFile saveFile(MultipartFile file) throws IOException {
         // TODO Auto-generated method stub
-        if (file.getSize() > 16_000_000) {
+        if (file.getSize() > 419_430_400) {
             throw new RuntimeException("File too big");
         }
         MediaFile mediaFile = MediaFile.builder()

@@ -10,6 +10,7 @@ import { IUserMess } from '../interfaces/user-mess';
   providedIn: 'root',
 })
 export class ConversationService {
+  typing = false;
   loading: boolean = false;
   tabPersonal: boolean = false;
   currentTab: string = 'public';
@@ -32,6 +33,17 @@ export class ConversationService {
     private chatService: ChatService,
     private userService: UserService
   ) {
+    this.chatService.typing$.subscribe((val) => {
+      // console.log(val.identityCode);
+      // console.log(this.chatService.userData.identityCode);
+      // console.log(val.identityCode != this.chatService.userData.identityCode);
+      if (
+        val.identityCode != this.chatService.userData.identityCode &&
+        val.receiverCode == this.currentTab
+      ) {
+        this.typing = true;
+      }
+    });
     this.chatService.connected$.subscribe((state) => {
       if (state) {
         this.userService.getInfo().subscribe({

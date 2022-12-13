@@ -29,6 +29,8 @@ export class ChatbarComponent implements OnInit {
   videoIcon = faFileVideo;
 
   attachmentOpen: boolean = false;
+
+  countPress: number = 0;
   constructor(
     private fb: FormBuilder,
     private chatService: ChatService,
@@ -42,7 +44,14 @@ export class ChatbarComponent implements OnInit {
       message: ['', [Validators.required]],
     });
   }
-
+  typing() {
+    if (this.countPress / 5 == 1) {
+      // this.chatService.sendTyping(this.tabSelected, !this.tabPersonal);
+      this.countPress = 0;
+    } else {
+      this.countPress++;
+    }
+  }
   submit() {
     if (this.form.valid) {
       const text = this.form.value.message;

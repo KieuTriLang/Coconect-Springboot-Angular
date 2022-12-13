@@ -87,7 +87,6 @@ export class CommandService {
           false,
           true
         );
-        this.chatService.subscribeRoom(res.roomCode);
       },
       error: (err) => {
         console.log(err);

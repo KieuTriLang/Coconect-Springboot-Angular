@@ -47,12 +47,12 @@ export class MessageService {
   transformFile(fileCode: string, type: string): string {
     let text = '';
     if (new RegExp(this.imageRegex).test(type)) {
-      text = `<img src="${this.REST_API}${this.VERSION}/media-file/image/${fileCode}" alt=""/>`;
+      text = `<div class="m-image"><img src="${this.REST_API}${this.VERSION}/media-file/image/${fileCode}" alt=""/></div>`;
     }
     if (new RegExp(this.videoRegex).test(type)) {
-      text = `<video controls>
+      text = `<div class="m-video"><video controls>
   <source src="${this.REST_API}${this.VERSION}/media-file/video/${fileCode}" type="${type}">
-</video>`;
+</video></div>`;
     }
 
     return text;

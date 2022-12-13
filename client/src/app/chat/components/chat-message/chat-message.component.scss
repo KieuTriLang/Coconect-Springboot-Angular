@@ -90,19 +90,92 @@
           z-index: -1;
         }
       }
-      & img {
-        max-width: 200px;
+      & .m-image {
         width: 100%;
-        aspect-ratio: 4/3;
-        border-radius: 5px;
-        object-fit: cover;
+        // aspect-ratio: 4/3;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        // transition: all cubic-bezier(0.47, 0, 0.745, 0.715) 0.1s;
+        & img {
+          max-width: 200px;
+          border-radius: 5px;
+          object-fit: contain;
+        }
+        &.active {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          translate: -50% -50%;
+          // scale: 3.5;
+          z-index: 999;
+          & img {
+            max-width: none;
+            width: 60vw;
+          }
+          &::after {
+            position: absolute;
+            content: "";
+            inset: -500% 0 -500% 0;
+            background: rgba($color-black, 0.75);
+            z-index: -1;
+          }
+        }
       }
-      & video {
-        max-width: 200px;
+      & .m-video {
+        position: relative;
         width: 100%;
-        aspect-ratio: 4/3;
-        border-radius: 5px;
-        object-fit: cover;
+        // aspect-ratio: 4/3;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        // transition: all cubic-bezier(0.47, 0, 0.745, 0.715) 0.1s;
+        &::before {
+          position: absolute;
+          content: "";
+          top: 50%;
+          left: 50%;
+          translate: -50% -50%;
+          width: 0;
+          border-top: 20px solid transparent;
+          border-bottom: 20px solid transparent;
+          border-left: 30px solid rgba($color-2, 0.75);
+        }
+        & video {
+          max-width: 200px;
+          border-radius: 5px;
+          object-fit: contain;
+          &::-webkit-media-controls {
+            display: none;
+          }
+        }
+        &.active {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          translate: -50% -50%;
+          // scale: 3.5;
+          z-index: 999;
+          & video {
+            max-width: none;
+            width: 80vw;
+            &::-webkit-media-controls {
+              display: flex;
+            }
+          }
+          &::before {
+            display: none;
+          }
+          &::after {
+            position: absolute;
+            content: "";
+            inset: -500%;
+            background: rgba($color-black, 0.75);
+            z-index: -1;
+          }
+        }
       }
     }
   }

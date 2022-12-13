@@ -19,7 +19,7 @@
       [userCode]="userCode"
       [userMess]="userMess"
     ></app-chat-message>
-    <div class="typing" *ngIf="chatService.typing">
+    <div class="typing" *ngIf="conversationService.typing">
       <span></span><span></span><span></span>
     </div>
   </div>

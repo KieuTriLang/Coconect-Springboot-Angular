@@ -28,7 +28,10 @@ public class ChatController {
 
     @MessageMapping("/message-private")
     public Message receivePrivateMessage(@Payload Message message) {
-
+        if (message.getStatus().equals(Status.TYPING)) {
+            simpMessagingTemplate.convertAndSendToUser(message.getReceiverCode(), "/private", message);
+            return message;
+        }
         Message mess = messageService.saveMessage(message);
         simpMessagingTemplate.convertAndSendToUser(mess.getReceiverCode(), "/private", mess);
         return mess;
@@ -37,6 +40,11 @@ public class ChatController {
     @MessageMapping("/message-room")
     public Message receiveGroupMessage(@Payload Message message) {
         message.setToRoom(true);
+        if (message.getStatus().equals(Status.TYPING)) {
+            simpMessagingTemplate.convertAndSend("/room/" + message.getReceiverCode(), message);
+            return message;
+        }
+
         Message mess = messageService.saveMessage(message);
         simpMessagingTemplate.convertAndSend("/room/" + mess.getReceiverCode(), mess);
         return mess;

@@ -26,7 +26,8 @@ export class ChatService {
   };
   stompClient!: Client;
 
-  typing: boolean = false;
+  typing = new Subject<IChatMessage>();
+  typing$ = this.typing.asObservable();
 
   newMessage = new Subject<IChatMessage>();
   newMessage$ = this.newMessage.asObservable();
@@ -114,6 +115,7 @@ export class ChatService {
       case 'INVITE':
         break;
       case 'TYPING':
+        this.typing.next(payloadData);
         break;
     }
   };
@@ -137,6 +139,7 @@ export class ChatService {
         });
         break;
       case 'TYPING':
+        this.typing.next(payloadData);
         break;
     }
   };
@@ -163,7 +166,29 @@ export class ChatService {
       }
     }
   }
-
+  sendTyping(receiverCode: string, toGroup: boolean) {
+    if (this.stompClient) {
+      var chatMessage: IChatMessage = {
+        id: null,
+        identityCode: this.userData.identityCode,
+        senderName: this.userData.username,
+        receiverCode: receiverCode,
+        content: '',
+        status: 'TYPING',
+        postedTime: '',
+        toRoom: toGroup,
+      };
+      if (receiverCode == 'public') {
+        this.stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
+      } else {
+        if (toGroup) {
+          this.sendToGroup(chatMessage);
+        } else {
+          this.sendToUser(chatMessage);
+        }
+      }
+    }
+  }
   sendToUser(chatMessage: IChatMessage) {
     this.userService
       .addPrivateConversation(
