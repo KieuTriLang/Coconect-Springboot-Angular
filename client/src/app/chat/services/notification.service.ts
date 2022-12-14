@@ -14,12 +14,16 @@ export class NotificationService {
   newNoti = new BehaviorSubject<boolean>(false);
   newNoti$ = this.newNoti.asObservable();
 
+  notiKick = new BehaviorSubject<string | null>(null);
+  notiKick$ = this.notiKick.asObservable();
+
   constructor(private userService: UserService) {
     this.userService.getNotificatons().subscribe({
       next: (res) => {
         res.forEach((noti) => {
           this.notiList = [
             {
+              id: noti.id,
               type: NotiType['invite'],
               content: noti.content,
               roomCode: noti.roomCode,
@@ -39,5 +43,8 @@ export class NotificationService {
   createNewNoti(noti: INotiItem) {
     this.notiList = [noti, ...this.notiList];
     this.newNoti.next(true);
+    if (noti.status == 'KICK') {
+      this.notiKick.next(noti.roomCode);
+    }
   }
 }

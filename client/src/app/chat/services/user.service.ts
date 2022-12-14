@@ -64,15 +64,15 @@ export class UserService {
     );
   }
 
-  acceptInvite(roomCode: string): Observable<any> {
+  acceptInvite(id: number): Observable<any> {
     return this.http.post<any>(
-      `${this.REST_API}${this.VERSION}/users/room/${roomCode}/invite`,
+      `${this.REST_API}${this.VERSION}/users/room/invite/${id}`,
       null
     );
   }
-  denyInvite(roomCode: string): Observable<any> {
+  denyInvite(id: number): Observable<any> {
     return this.http.delete<any>(
-      `${this.REST_API}${this.VERSION}/users/room/${roomCode}/invite`
+      `${this.REST_API}${this.VERSION}/users/room/invite/${id}`
     );
   }
 }

@@ -32,8 +32,8 @@ export class NotiItemComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  accept(roomCode: string) {
-    this.userService.acceptInvite(roomCode).subscribe({
+  accept(id: number, roomCode: string) {
+    this.userService.acceptInvite(id).subscribe({
       next: (res) => {
         this.conversationService.createNewTab(
           {
@@ -56,8 +56,8 @@ export class NotiItemComponent implements OnInit {
       },
     });
   }
-  deny(roomCode: string) {
-    this.userService.denyInvite(roomCode).subscribe({
+  deny(id: number, roomCode: string) {
+    this.userService.denyInvite(id).subscribe({
       next: (res) => {
         let notiList = this.notificationService.notiList;
         this.notificationService.notiList = notiList.map((nt, index) =>

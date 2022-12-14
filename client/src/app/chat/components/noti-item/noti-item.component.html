@@ -8,12 +8,12 @@
     </div>
     <div class="action" *ngIf="noti.status == 'INVITE'">
       <p class="time">{{noti.time | date : 'shortTime'}}</p>
-      <div class="action-item" (click)="accept(noti.roomCode)">
+      <div class="action-item" (click)="accept(noti.id || 0, noti.roomCode)">
         <div class="icon accept">
           <fa-icon [icon]="acceptIcon" [size]="'1x'"></fa-icon>
         </div>
       </div>
-      <div class="action-item" (click)="deny(noti.roomCode)">
+      <div class="action-item" (click)="deny(noti.id || 0, noti.roomCode)">
         <div class="icon deny">
           <fa-icon [icon]="denyIcon" [size]="'1x'"></fa-icon>
         </div>

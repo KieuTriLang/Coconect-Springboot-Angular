@@ -19,7 +19,7 @@ public interface UserService {
 
     Set<Notification> getNotificationByUsername(String username);
 
-    void acceptInvite(String username, String roomCode);
+    void acceptInvite(Long id);
 
-    void denyInvite(String username, String roomCode);
+    void denyInvite(Long id);
 }

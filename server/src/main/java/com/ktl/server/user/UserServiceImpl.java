@@ -147,16 +147,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void acceptInvite(String username, String roomCode) {
+    public void acceptInvite(Long id) {
         // TODO Auto-generated method stub
-        Notification notification = notificationRepo.findByReceiverUsernameAndRoomCode(username, roomCode)
+        Notification notification = notificationRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Error"));
-        Room room = roomRepo.findByRoomCode(roomCode).orElseThrow(() -> new RuntimeException("Error"));
-        AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("Error"));
+        Room room = roomRepo.findByRoomCode(notification.getRoomCode())
+                .orElseThrow(() -> new RuntimeException("Error"));
+        AppUser user = userRepo.findByUsername(notification.getReceiver().getUsername())
+                .orElseThrow(() -> new RuntimeException("Error"));
 
         notification.setStatus(Status.ACCEPT);
         notificationRepo.save(notification);
-        Conversation conversation = conversationRepo.save((Conversation.builder().conversationCode(roomCode)
+        Conversation conversation = conversationRepo.save((Conversation.builder().conversationCode(room.getRoomCode())
                 .name(room.getRoomName())
                 .unread(0).personal(false)
                 .build()));
@@ -168,9 +170,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void denyInvite(String username, String roomCode) {
+    public void denyInvite(Long id) {
         // TODO Auto-generated method stub
-        Notification notification = notificationRepo.findByReceiverUsernameAndRoomCode(username, roomCode)
+        Notification notification = notificationRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Error"));
 
         notification.setStatus(Status.DENY);

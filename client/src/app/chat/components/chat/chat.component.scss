@@ -102,6 +102,54 @@
       border-radius: 0 0 5px 5px;
     }
   }
+  & .noti-error {
+    padding: 5px 15px;
+    position: absolute;
+    width: 400px;
+    top: 100%;
+    left: 50%;
+    translate: -50% 150%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 2.4rem;
+    border-radius: 5px;
+    color: $color-1;
+    opacity: 0;
+    transition: all cubic-bezier(0.215, 0.61, 0.355, 1) 0.3s;
+    & p {
+      font-size: 1.2rem;
+      width: 100%;
+    }
+    &.info {
+      background: rgba(#47b5ff, 0.85);
+      &:hover {
+        background: rgba(#47b5ff, 0.65);
+      }
+    }
+    &.checked {
+      background: rgba(#6eccaf, 0.85);
+      &:hover {
+        background: rgba(#6eccaf, 0.65);
+      }
+    }
+    &.danger {
+      background: rgba(#e94560, 0.85);
+      &:hover {
+        background: rgba(#e94560, 0.65);
+      }
+    }
+    &.invite {
+      background: rgba(#e94560, 0.85);
+      &:hover {
+        background: rgba(#e94560, 0.65);
+      }
+    }
+    &.active {
+      translate: -50% -125%;
+      opacity: 1;
+    }
+  }
 }
 
 @keyframes loading {

@@ -40,6 +40,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         this.init();
       }
     });
+    this.chatService.scrollToBottom$.subscribe((val) => {
+      if (val) {
+        this.scrollToBottom();
+      }
+    });
   }
   init() {
     this.userService.getInfo().subscribe({
@@ -73,6 +78,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     } catch (error) {}
   }
   handleScroll = (e: any) => {
+    this.chatService.scrolling = true;
     const scrollHeight = e.target.scrollHeight;
     const scrollTop = e.target.scrollTop;
     const clientHeight = e.target.clientHeight;

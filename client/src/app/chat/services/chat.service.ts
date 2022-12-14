@@ -1,3 +1,4 @@
+import { INotiItem } from './../interfaces/noti-item';
 import { NotiType } from './../data/noti-type.data';
 import { IRoomSubscription } from './../interfaces/room-subscription';
 import { BehaviorSubject } from 'rxjs';
@@ -29,11 +30,17 @@ export class ChatService {
   typing = new Subject<IChatMessage>();
   typing$ = this.typing.asObservable();
 
+  scrolling = false;
+  scrollToBottom = new BehaviorSubject<boolean>(false);
+  scrollToBottom$ = this.scrollToBottom.asObservable();
+
   newMessage = new Subject<IChatMessage>();
   newMessage$ = this.newMessage.asObservable();
 
   connected = new BehaviorSubject<boolean>(false);
   connected$ = this.connected.asObservable();
+
+  uploadError: INotiItem | null = null;
 
   roomSubscriptions: IRoomSubscription[] = [];
   constructor(
@@ -128,7 +135,7 @@ export class ChatService {
         this.newMessage.next(payloadData);
         break;
       case 'INVITE':
-        this.notificationService.newNoti.next(true);
+      case 'KICK':
         this.notificationService.createNewNoti({
           type: NotiType['invite'],
           content: payloadData.content,

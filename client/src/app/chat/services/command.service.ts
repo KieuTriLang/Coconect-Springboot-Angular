@@ -3,6 +3,7 @@ import { ChatService } from './chat.service';
 import { RoomService } from './room.service';
 import { Injectable } from '@angular/core';
 import { IRoomRequest } from '../interfaces/room-request';
+import { NotiType } from '../data/noti-type.data';
 
 interface IObjectKeys {
   [key: string]: ICommandRegex;
@@ -96,22 +97,73 @@ export class CommandService {
   addMember = ({ roomCode, members }: IRoomRequest) => {
     this.roomService.addMember(roomCode, members).subscribe({
       next: (res) => {
-        console.log(res);
+        this.chatService.uploadError = {
+          type: NotiType['checked'],
+          content: 'Invite successfully!',
+          roomCode: '',
+          roomName: '',
+          time: '',
+          status: '',
+        };
       },
       error: (err) => {
-        console.log(err);
+        this.chatService.uploadError = {
+          type: NotiType['danger'],
+          content: 'Invite failed!',
+          roomCode: '',
+          roomName: '',
+          time: '',
+          status: '',
+        };
       },
     });
   };
   removeMember = ({ roomCode, members }: IRoomRequest) => {
     this.roomService.removeMember(roomCode, members).subscribe({
       next: (res) => {
-        console.log(res);
+        this.chatService.uploadError = {
+          type: NotiType['checked'],
+          content: 'Kick successfully!',
+          roomCode: '',
+          roomName: '',
+          time: '',
+          status: '',
+        };
       },
       error: (err) => {
-        console.log(err);
+        this.chatService.uploadError = {
+          type: NotiType['danger'],
+          content: 'Kick failed!',
+          roomCode: '',
+          roomName: '',
+          time: '',
+          status: '',
+        };
       },
     });
   };
-  leaveRoom = ({ roomCode }: IRoomRequest) => {};
+  leaveRoom = ({ roomCode }: IRoomRequest) => {
+    this.roomService.leaveRoom(roomCode).subscribe({
+      next: (res) => {
+        this.chatService.uploadError = {
+          type: NotiType['checked'],
+          content: 'Leave successfully!',
+          roomCode: '',
+          roomName: '',
+          time: '',
+          status: '',
+        };
+      },
+      error: (err) => {
+        this.chatService.uploadError = {
+          type: NotiType['danger'],
+          content: 'Leave failed!',
+          roomCode: '',
+          roomName: '',
+          time: '',
+          status: '',
+        };
+      },
+    });
+  };
 }

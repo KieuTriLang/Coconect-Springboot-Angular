@@ -10,6 +10,7 @@ import {
   faFileVideo,
   faImage,
 } from '@fortawesome/free-solid-svg-icons';
+import { NotiType } from '../../data/noti-type.data';
 
 @Component({
   selector: 'app-chatbar',
@@ -69,7 +70,8 @@ export class ChatbarComponent implements OnInit {
     const nameList: string[] = this.getListStringFromText(newText);
     const { createRoom, addMember, removeMember, leaveRoom } =
       this.commandService.prefixCommandRegex;
-    if (newText.length == 0) {
+
+    if (newText.length == 0 && !leaveRoom.regex.test(text)) {
       return;
     }
     switch (true) {
@@ -89,16 +91,16 @@ export class ChatbarComponent implements OnInit {
         break;
       case removeMember.regex.test(text) && this.tabSelected != 'public':
         removeMember.action({
-          roomCode: '1234',
+          roomCode: this.tabSelected,
           roomName: '',
           members: nameList,
         });
         break;
       case leaveRoom.regex.test(text) && this.tabSelected != 'public':
         leaveRoom.action({
-          roomCode: '1234',
+          roomCode: this.tabSelected,
           roomName: '',
-          members: nameList,
+          members: [],
         });
         break;
       default:
@@ -124,10 +126,17 @@ export class ChatbarComponent implements OnInit {
                 this.messageService.transformFile(res.fileCode, res.type),
                 !this.tabPersonal
               );
-              this.attachmentOpen = false;
+              this.chatService.uploadError = null;
             },
             error: (err) => {
-              console.log(err);
+              this.chatService.uploadError = {
+                type: NotiType['danger'],
+                content: 'Upload file failed! File size must smaller 400MB!',
+                roomCode: '',
+                roomName: '',
+                time: '',
+                status: '',
+              };
             },
           });
         }
@@ -141,15 +150,23 @@ export class ChatbarComponent implements OnInit {
                 this.messageService.transformFile(res.fileCode, res.type),
                 !this.tabPersonal
               );
-              this.attachmentOpen = false;
+              this.chatService.uploadError = null;
             },
             error: (err) => {
-              console.log(err);
+              this.chatService.uploadError = {
+                type: NotiType['danger'],
+                content: 'Upload file failed! File size must smaller 400MB!',
+                roomCode: '',
+                roomName: '',
+                time: '',
+                status: '',
+              };
             },
           });
         }
       }
     }
     target.value = '';
+    this.attachmentOpen = false;
   }
 }

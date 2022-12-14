@@ -61,21 +61,17 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/room/{roomCode}/invite")
+    @PostMapping("/room/invite/{id}")
     public ResponseEntity<Object> acceptInvite(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-            @PathVariable String roomCode) {
-        String username = authorizationHeaderHelper.getSub(authorizationHeader);
-        userService.acceptInvite(username, roomCode);
+            @PathVariable Long id) {
+        userService.acceptInvite(id);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/room/{roomCode}/invite")
+    @DeleteMapping("/room/invite/{id}")
     public ResponseEntity<Object> denyInvite(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-            @PathVariable String roomCode) {
-        String username = authorizationHeaderHelper.getSub(authorizationHeader);
-        userService.denyInvite(username, roomCode);
+            @PathVariable Long id) {
+        userService.denyInvite(id);
         return ResponseEntity.ok().build();
     }
 }

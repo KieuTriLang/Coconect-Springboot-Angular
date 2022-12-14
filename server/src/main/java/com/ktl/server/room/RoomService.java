@@ -8,7 +8,9 @@ public interface RoomService {
 
     RoomDto getRoomByRoomCode(String roomCode);
 
-    void addMembers(String roomCode, List<String> usernames);
+    void addMembers(String authName, String roomCode, List<String> usernames);
 
-    void removeMembers(String roomCode, List<String> usernames);
+    void removeMembers(String authName, String roomCode, List<String> usernames);
+
+    void leaveRoom(String roomCode, String username);
 }

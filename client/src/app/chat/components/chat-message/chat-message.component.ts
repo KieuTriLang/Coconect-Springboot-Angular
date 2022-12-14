@@ -46,7 +46,6 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
   };
   zoom = (event: Event) => {
     event.preventDefault();
-    console.log(event);
     const anchor = event.target as HTMLAnchorElement;
     if (['IMG'].indexOf(anchor.tagName) >= 0) {
       anchor.parentElement?.classList.add('active');

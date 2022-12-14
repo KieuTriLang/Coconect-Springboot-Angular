@@ -27,4 +27,14 @@
     [tabSelected]="conversationService.currentTab"
     [tabPersonal]="conversationService.tabPersonal"
   ></app-chatbar>
+  <div
+    *ngIf="chatService.uploadError != null"
+    class="noti-error"
+    [class]="chatService.uploadError.type.name"
+    [class.active]="chatService.uploadError.content != ''"
+    (click)="chatService.uploadError = null"
+  >
+    <fa-icon [icon]="chatService.uploadError.type.icon" [size]="'1x'"></fa-icon>
+    <p>{{ chatService.uploadError.content }}</p>
+  </div>
 </div>

@@ -32,4 +32,9 @@ export class RoomService {
       { params: params }
     );
   }
+  leaveRoom(roomCode: string): Observable<any> {
+    return this.http.delete<any>(
+      `${this.REST_API}${this.VERSION}/rooms/${roomCode}`
+    );
+  }
 }

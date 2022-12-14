@@ -1,3 +1,4 @@
+import { NotificationService } from './notification.service';
 import { IConversation } from './../interfaces/conversation';
 import { UserService } from './user.service';
 import { ITab } from './../interfaces/tab';
@@ -31,12 +32,15 @@ export class ConversationService {
   conversations: Map<string, IUserMess[]> = new Map<string, IUserMess[]>();
   constructor(
     private chatService: ChatService,
-    private userService: UserService
+    private userService: UserService,
+    private notificationService: NotificationService
   ) {
+    this.notificationService.notiKick$.subscribe((roomCode) => {
+      if (roomCode != null) {
+        this.removeConversation(roomCode);
+      }
+    });
     this.chatService.typing$.subscribe((val) => {
-      // console.log(val.identityCode);
-      // console.log(this.chatService.userData.identityCode);
-      // console.log(val.identityCode != this.chatService.userData.identityCode);
       if (
         val.identityCode != this.chatService.userData.identityCode &&
         val.receiverCode == this.currentTab
@@ -133,6 +137,7 @@ export class ConversationService {
             this.add(message, true);
           });
           this.loading = false;
+          this.checkToScrollToBottom();
         },
         error: (err) => {
           console.log(err);
@@ -145,6 +150,7 @@ export class ConversationService {
             this.add(message, true);
           });
           this.loading = false;
+          this.checkToScrollToBottom();
         },
         error: (err) => {
           console.log(err);
@@ -158,6 +164,18 @@ export class ConversationService {
     );
   }
 
+  checkToScrollToBottom() {
+    if (!this.chatService.scrolling) {
+      this.chatService.scrollToBottom.next(true);
+    }
+  }
+  removeConversation(roomCode: string) {
+    if (this.currentTab == roomCode) {
+      this.changeTab('public');
+    }
+    this.tabs = this.tabs.filter((t) => t.info.conversationCode != roomCode);
+    this.conversations.delete(roomCode);
+  }
   getByKey(key: string): IUserMess[] {
     return this.conversations.get(key) || [];
   }

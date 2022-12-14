@@ -78,55 +78,82 @@ public class RoomServiceImpl implements RoomService {
 
     @Transactional
     @Override
-    public void addMembers(String roomCode, List<String> usernames) {
+    public void addMembers(String authName, String roomCode, List<String> usernames) {
         // TODO Auto-generated method stub
-        List<String> userCodes = new ArrayList<>();
+
         Room room = roomRepo.findByRoomCode(roomCode).orElseThrow(() -> new RuntimeException("Not room found"));
+        if (!room.getCreator().equals(authName)) {
+            throw new RuntimeException();
+        }
         String content = room.getCreator() + " invite you to join room: " + room.getRoomName();
         for (String username : usernames) {
             AppUser user = userRepo.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Not found user: " + username));
             // room.getMembers().add(user);
-            notificationRepo.save(Notification.builder()
+            Long idNoti = notificationRepo.save(Notification.builder()
                     .content(content)
                     .roomCode(roomCode)
                     .roomName(room.getRoomName())
                     .status(Status.INVITE)
                     .time(ZonedDateTime.now(ZoneId.of("Z")).toString()).receiver(user)
-                    .build());
-            userCodes.add(user.getUserCode());
-        }
-        Message message = Message.builder()
-                .identityCode(roomCode)
-                .senderName(room.getRoomName())
-                .content(content)
-                .status(Status.INVITE)
-                .build();
-        for (String userCode : userCodes) {
-            simpMessagingTemplate.convertAndSendToUser(userCode, "/private", message);
+                    .build()).getId();
+            Message message = Message.builder()
+                    .id(idNoti)
+                    .identityCode(roomCode)
+                    .senderName(room.getRoomName())
+                    .content(content)
+                    .status(Status.INVITE)
+                    .build();
+            simpMessagingTemplate.convertAndSendToUser(user.getUserCode(), "/private", message);
         }
 
     }
 
     @Override
-    public void removeMembers(String roomCode, List<String> usernames) {
+    public void removeMembers(String authName, String roomCode, List<String> usernames) {
         // TODO Auto-generated method stub
-        List<String> userCodes = new ArrayList<>();
+
         Room room = roomRepo.findByRoomCode(roomCode).orElseThrow(() -> new RuntimeException("Not room found"));
+        if (!room.getCreator().equals(authName)) {
+            throw new RuntimeException();
+        }
+        String content = room.getRoomName() + ": You have been kicked!";
         for (String username : usernames) {
             AppUser user = userRepo.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Not found user: " + username));
+            user.getConversations().removeIf(c -> c.getConversationCode().equals(roomCode));
             room.getMembers().removeIf(u -> usernames.indexOf(u.getUsername()) >= 0);
-            userCodes.add(user.getUserCode());
+            Long idNoti = notificationRepo.save(Notification.builder()
+                    .content(content)
+                    .roomCode(roomCode)
+                    .roomName(room.getRoomName())
+                    .status(Status.KICK)
+                    .time(ZonedDateTime.now(ZoneId.of("Z")).toString()).receiver(user)
+                    .build()).getId();
+            userRepo.save(user);
+            Message message = Message.builder()
+                    .id(idNoti)
+                    .identityCode(roomCode)
+                    .content(content)
+                    .status(Status.KICK)
+                    .build();
+            simpMessagingTemplate.convertAndSendToUser(user.getUserCode(), "/private", message);
         }
-        Message message = Message.builder()
-                .identityCode(roomCode)
-                .content(room.getRoomName() + ": You have been kicked!")
-                .status(Status.INVITE)
-                .build();
-        for (String userCode : userCodes) {
-            simpMessagingTemplate.convertAndSendToUser(userCode, "/private", message);
-        }
+        roomRepo.save(room);
+
+    }
+
+    @Override
+    public void leaveRoom(String roomCode, String username) {
+        // TODO Auto-generated method stub
+        Room room = roomRepo.findByRoomCode(roomCode).orElseThrow(() -> new RuntimeException("Not room found"));
+        AppUser user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Not found user: " + username));
+        user.getConversations().removeIf(c -> c.getConversationCode().equals(roomCode));
+        room.getMembers().removeIf(u -> u.equals(user));
+
+        userRepo.save(user);
+        roomRepo.save(room);
     }
 
 }

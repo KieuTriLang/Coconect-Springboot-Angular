@@ -26,7 +26,7 @@ public class MediaFile {
     private String name;
     private String type;
     @Lob
-    @Column(columnDefinition = "MEDIUMBLOB")
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] data;
     private Long size;
 
