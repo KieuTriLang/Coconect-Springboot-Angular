@@ -21,6 +21,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   @ViewChild('messageContainer') messC!: ElementRef;
   userCode: string = '';
   scrolling: boolean = false;
+  isOpenedMemberList: boolean = false;
   constructor(
     public chatService: ChatService,
     private authService: AuthService,
@@ -38,6 +39,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.authService.authenticated$.subscribe((val) => {
       if (val) {
         this.init();
+      } else {
+        this.reset();
       }
     });
     this.chatService.scrollToBottom$.subscribe((val) => {
@@ -61,6 +64,13 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       },
     });
   }
+  reset() {
+    this.userCode = '';
+    this.scrolling = false;
+    this.isOpenedMemberList = false;
+    this.conversationService.reset();
+    this.chatService.reset();
+  }
   handleNewMessage = (message: IChatMessage) => {
     this.conversationService.add(message, false);
     this.scrollToBottom();
@@ -68,6 +78,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   handleTabChanged(conversationCode: string) {
     this.scrolling = false;
+    if(conversationCode == 'public'){
+      this.isOpenedMemberList= false;
+    }
     this.conversationService.changeTab(conversationCode);
   }
 
@@ -90,4 +103,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       }
     }
   };
+  handleNotiFromMemberList(hasData: boolean) {
+    if (hasData) {
+      this.isOpenedMemberList = true;
+    }
+  }
 }

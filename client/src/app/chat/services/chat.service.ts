@@ -18,6 +18,7 @@ import { NotificationService } from './notification.service';
   providedIn: 'root',
 })
 export class ChatService {
+  
   baseUrl = environment.baseUrl;
 
   userData: UserData = {
@@ -50,6 +51,9 @@ export class ChatService {
     private userService: UserService
   ) {}
 
+  reset() {
+    this.uploadError = null;
+  }
   registerUser(userData: UserData) {
     this.userData = userData;
     this.connect();
@@ -116,6 +120,7 @@ export class ChatService {
     switch (payloadData.status) {
       case 'JOIN':
         break;
+      case 'PROMOTE':
       case 'MESSAGE':
         this.newMessage.next(payloadData);
         break;
@@ -129,6 +134,8 @@ export class ChatService {
   onPrivateReceived = (payload: Message) => {
     var payloadData: IChatMessage = JSON.parse(payload.body);
     switch (payloadData.status) {
+      case 'NOTI':
+        break;
       case 'JOIN':
         break;
       case 'MESSAGE':
@@ -137,6 +144,7 @@ export class ChatService {
       case 'INVITE':
       case 'KICK':
         this.notificationService.createNewNoti({
+          id: payloadData.id || undefined,
           type: NotiType['invite'],
           content: payloadData.content,
           roomCode: payloadData.identityCode,

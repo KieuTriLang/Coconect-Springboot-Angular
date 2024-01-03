@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
-@RestController
-@RequestMapping("")
+
+//@RestController
+//@RequestMapping("")
 public class HomeController {
 
-    @GetMapping("")
+//    @GetMapping("")
     public ResponseEntity<Object> indexPage() {
 
         return ResponseEntity.status(HttpStatus.FOUND)

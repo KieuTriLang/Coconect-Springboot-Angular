@@ -4,11 +4,15 @@ import { RoomService } from './room.service';
 import { Injectable } from '@angular/core';
 import { IRoomRequest } from '../interfaces/room-request';
 import { NotiType } from '../data/noti-type.data';
+import { BehaviorSubject } from 'rxjs';
+import { MemberInfo } from '../interfaces/member-info';
 
 interface IObjectKeys {
   [key: string]: ICommandRegex;
 }
-interface ICommandRegex {
+export interface ICommandRegex {
+  name: string,
+  value: string,
   regex: RegExp;
   action: (room: IRoomRequest) => void;
 }
@@ -16,23 +20,56 @@ interface ICommandRegex {
   providedIn: 'root',
 })
 export class CommandService {
+
+  sendCommandText = new BehaviorSubject<string>('');
+  sendCommandText$ = this.sendCommandText.asObservable();
+  sendUserInfo = new BehaviorSubject<string>('');
+  sendUserInfo$ = this.sendUserInfo.asObservable();
+  getMemberInfo = new BehaviorSubject<MemberInfo[]>([]);
+  getMemberInfo$ = this.getMemberInfo.asObservable(); 
   prefixCommandRegex!: IObjectKeys;
+
   constructor(
     private roomService: RoomService,
     private chatService: ChatService,
     private conversationService: ConversationService
   ) {
     this.prefixCommandRegex = {
+      
       createRoom: {
+        name: "Create new room chat",
+        value: "/CreateRoom:",
         regex: new RegExp(`^\/CreateRoom:`),
         action: this.createRoom,
       },
-      addMember: { regex: new RegExp(`^\/AddMember:`), action: this.addMember },
+      addMember: {
+        name: "Add new member",
+        value: "/AddMember:",
+        regex: new RegExp(`^\/AddMember:`), action: this.addMember
+      },
       removeMember: {
-        regex: new RegExp(`^\/RemoveMember:`),
+        name: "Kick out member",
+        value: "/KickMember:",
+        regex: new RegExp(`^\/KickMember:`),
         action: this.removeMember,
       },
-      leaveRoom: { regex: new RegExp(`\/LeaveRoom:`), action: this.leaveRoom },
+      leaveRoom: {
+        name: "Leave room chat",
+        value: "/LeaveRoom:",
+        regex: new RegExp(`\/LeaveRoom:`), action: this.leaveRoom
+      },
+      memberList:{
+        name: "Show member of room",
+        value: "/Members:",
+        regex: new RegExp(`\/Members:`),
+        action: this.getMemberOfRoom
+      },
+      promoteMember:{
+        name: "Promote member",
+        value: "/Promote:",
+        regex: new RegExp(`\/Promote:`),
+        action: this.promoteMember
+      }
     };
   }
 
@@ -107,9 +144,10 @@ export class CommandService {
         };
       },
       error: (err) => {
+        console.log(err);
         this.chatService.uploadError = {
           type: NotiType['danger'],
-          content: 'Invite failed!',
+          content: err.error.message,
           roomCode: '',
           roomName: '',
           time: '',
@@ -133,7 +171,7 @@ export class CommandService {
       error: (err) => {
         this.chatService.uploadError = {
           type: NotiType['danger'],
-          content: 'Kick failed!',
+          content: err.error.message,
           roomCode: '',
           roomName: '',
           time: '',
@@ -144,7 +182,8 @@ export class CommandService {
   };
   leaveRoom = ({ roomCode }: IRoomRequest) => {
     this.roomService.leaveRoom(roomCode).subscribe({
-      next: (res) => {
+      next: (res:boolean) => {
+        if(res){
         this.chatService.uploadError = {
           type: NotiType['checked'],
           content: 'Leave successfully!',
@@ -153,11 +192,12 @@ export class CommandService {
           time: '',
           status: '',
         };
+      }
       },
       error: (err) => {
         this.chatService.uploadError = {
           type: NotiType['danger'],
-          content: 'Leave failed!',
+          content: err.error.message,
           roomCode: '',
           roomName: '',
           time: '',
@@ -166,4 +206,60 @@ export class CommandService {
       },
     });
   };
+  getMemberOfRoom = ({roomCode}:IRoomRequest) =>{
+    this.roomService.getMemberOfRoom(roomCode).subscribe({
+      next: (res : MemberInfo[])=>{
+        this.getMemberInfo.next(res);
+      },
+      error: err =>{
+        this.chatService.uploadError = {
+          type: NotiType['danger'],
+          content: err.error.message,
+          roomCode: '',
+          roomName: '',
+          time: '',
+          status: '',
+        };
+      }
+    })
+  }
+
+  promoteMember = ({roomCode,members}:IRoomRequest) =>{
+    if(members.length == 1){
+      this.roomService.promoteMember(roomCode,members[0]).subscribe({
+        next: (res:boolean) =>{
+          if(res){
+            this.getMemberInfo.next(this.getMemberInfo.getValue().map(mi => {
+              if(mi.username == members[0]){
+                mi.master = true;
+                return mi;
+              }else{
+                mi.master = false;
+                return mi;
+              }
+            }));
+          }
+        },
+        error: err =>{
+          this.chatService.uploadError = {
+            type: NotiType['danger'],
+            content: err.error.message,
+            roomCode: '',
+            roomName: '',
+            time: '',
+            status: '',
+          };
+        }
+      })
+    }else{
+      this.chatService.uploadError = {
+        type: NotiType['danger'],
+        content: 'You only can promote one member!',
+        roomCode: '',
+        roomName: '',
+        time: '',
+        status: '',
+      };
+    }  
+  }
 }

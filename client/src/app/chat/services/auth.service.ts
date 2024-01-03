@@ -26,15 +26,15 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<JwtData> {
-    const body = new HttpParams()
-      .set('username', username)
-      .set('password', password);
+    
     return this.http.post<JwtData>(
-      `${this.REST_API}${this.VERSION}/users/login`,
-      body.toString(),
+      `${this.REST_API}${this.VERSION}/auth/sign-in`,
+      {
+        username: username,
+        password: password
+      },
       {
         headers: new HttpHeaders({
-          'Content-Type': 'application/x-www-form-urlencoded',
           Skip: '',
         }),
       }
@@ -50,7 +50,7 @@ export class AuthService {
       password: password,
     };
     return this.http.post<void>(
-      `${this.REST_API}${this.VERSION}/users/register`,
+      `${this.REST_API}${this.VERSION}/auth/sign-up`,
       body,
       {
         headers: new HttpHeaders({ Skip: '' }),

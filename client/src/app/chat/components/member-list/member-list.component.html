@@ -1,0 +1,6 @@
+<div class="member-list">
+    <div class="member" *ngFor="let member of memberInfos" (click)="addUserInfoToMessageInput(member.username)" [class.me]="member.username == authName">
+        <p class="username">{{member.username}}</p>
+        <fa-icon *ngIf="member.master" [icon]="iconCrown" [size]="'1x'"></fa-icon>
+    </div>
+</div>

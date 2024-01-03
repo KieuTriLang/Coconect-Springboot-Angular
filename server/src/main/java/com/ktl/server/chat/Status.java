@@ -8,5 +8,7 @@ public enum Status {
     ACCEPT,
     DENY,
     TYPING,
+    NOTI,
+    PROMOTE,
     LEAVE
 }

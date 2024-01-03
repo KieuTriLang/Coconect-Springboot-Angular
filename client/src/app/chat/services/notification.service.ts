@@ -17,26 +17,35 @@ export class NotificationService {
   notiKick = new BehaviorSubject<string | null>(null);
   notiKick$ = this.notiKick.asObservable();
 
-  constructor(private userService: UserService) {
-    this.userService.getNotificatons().subscribe({
-      next: (res) => {
-        res.forEach((noti) => {
-          this.notiList = [
-            {
-              id: noti.id,
-              type: NotiType['invite'],
-              content: noti.content,
-              roomCode: noti.roomCode,
-              roomName: noti.roomName,
-              status: noti.status,
-              time: noti.time,
+  constructor(
+    private userService: UserService,
+    private authService: AuthService
+  ) {
+    this.authService.authenticated$.subscribe({
+      next: (authenticated) => {
+        if (authenticated) {
+          this.userService.getNotificatons().subscribe({
+            next: (res) => {
+              res.forEach((noti) => {
+                this.notiList = [
+                  {
+                    id: noti.id,
+                    type: NotiType['invite'],
+                    content: noti.content,
+                    roomCode: noti.roomCode,
+                    roomName: noti.roomName,
+                    status: noti.status,
+                    time: noti.time,
+                  },
+                  ...this.notiList,
+                ];
+              });
             },
-            ...this.notiList,
-          ];
-        });
-      },
-      error: (err) => {
-        console.log(err);
+            error: (err) => {
+              console.log(err);
+            },
+          });
+        }
       },
     });
   }

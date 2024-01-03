@@ -1,0 +1,61 @@
+version: "3.7"
+services:
+  mysql:
+    image: mysql
+    container_name: mysql-container
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: kieutrilang
+      MYSQL_DATABASE: coconect
+    volumes:
+      - ./coconect.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - coconect-network
+  phpmyadmin8-container:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin8-container
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "8118:80"
+    environment:
+      PMA_HOST: mysql
+    networks:
+      - coconect-network
+  server:
+    container_name: coconect-server
+    build:
+      context: .
+      dockerfile: DockerfileServer
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: coconect
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: kieutrilang
+      JWT_SECRET_KEY: kdfpyxydadoivrotibdbwdvtbxfwxxlynlyapxyeqdcvkndkbgnmhoqevfbnygktpkxzmlhcufcwupliegmzeoxtbzrklijshptywikywfgdlkhokntqywtdjdriafqhxmngzicgujjvhrcmojydiwwmuhkdblru
+      JWT_ACCESS_EXPIRED_AFTER_MINUTE: 10080
+      JWT_REFRESH_EXPIRED_AFTER_MINUTE: 10080
+    depends_on:
+      - mysql
+    networks:
+      - coconect-network
+  client:
+    container_name: coconect-client
+    build:
+      context: .
+      dockerfile: DockerfileClient
+    ports:
+      - "4200:80"
+    restart: always
+    networks:
+      - coconect-network
+networks:
+  coconect-network:
+    name: coconect-network
+    driver: bridge

@@ -1,5 +1,7 @@
 package com.ktl.server.user;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,8 +11,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.ktl.server.exception.BadRequestException;
+import com.ktl.server.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -35,64 +41,36 @@ import static com.ktl.server.security.AppUserRole.*;
 import lombok.AllArgsConstructor;
 
 @Service
-@AllArgsConstructor
-public class UserServiceImpl implements UserService, UserDetailsService {
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
 
-    @Autowired
+    
     private final UserRepo userRepo;
-
-    @Autowired
-    private final PasswordEncoder passwordEncoder;
-
-    @Autowired
+    
     private final ConversationRepo conversationRepo;
-    @Autowired
+    
     private final MessageRepo messageRepo;
-    @Autowired
+    
     private final RoomRepo roomRepo;
-    @Autowired
+    
     private final NotificationRepo notificationRepo;
-    @Autowired
+    
     private final ModelMapper modelMapper;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("Not found username"));
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
-        authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
-
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
-                authorities);
-    }
-
-    @Override
-    public void register(RegisterRequest registerRequest) {
-        try {
-            AppUser user = AppUser.builder()
-                    .userCode(UUID.randomUUID().toString())
-                    .username(registerRequest.getUsername())
-                    .password(passwordEncoder.encode(registerRequest.getPassword()))
-                    .role(USER)
-                    .conversations(new LinkedHashSet<>()).build();
-
-            userRepo.save(user);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
 
     @Override
     public AppUserDto getInfoUserByUserCode(String userCode) {
         // TODO Auto-generated method stub
-        AppUser user = userRepo.findByUserCode(userCode).orElseThrow(() -> new RuntimeException("User not found"));
+        AppUser user = userRepo.findByUserCode(userCode).orElseThrow(() -> new NotFoundException("User not found"));
         return modelMapper.map(user, AppUserDto.class);
     }
 
     @Override
     public AppUserDto getInfoUserByUsername(String username) {
         // TODO Auto-generated method stub
-        AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new NotFoundException("User not found"));
         user.getConversations();
         return modelMapper.map(user, AppUserDto.class);
     }
@@ -101,7 +79,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public void addPrivateConversation(String senderCode, String receiverCode) {
         // TODO Auto-generated method stub
         AppUser sender = userRepo.findByUserCode(senderCode)
-                .orElseThrow(() -> new RuntimeException("Not found sender"));
+                .orElseThrow(() -> new NotFoundException("Not found sender"));
 
         Set<Conversation> senderCon = sender.getConversations();
 
@@ -150,11 +128,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public void acceptInvite(Long id) {
         // TODO Auto-generated method stub
         Notification notification = notificationRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Error"));
+                .orElseThrow(() -> new NotFoundException("Not found notification."));
         Room room = roomRepo.findByRoomCode(notification.getRoomCode())
-                .orElseThrow(() -> new RuntimeException("Error"));
+                .orElseThrow(() -> new NotFoundException("Not found room."));
         AppUser user = userRepo.findByUsername(notification.getReceiver().getUsername())
-                .orElseThrow(() -> new RuntimeException("Error"));
+                .orElseThrow(() -> new NotFoundException("Not found user"));
 
         notification.setStatus(Status.ACCEPT);
         notificationRepo.save(notification);
@@ -165,6 +143,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.getConversations().add(conversation);
         room.getMembers().add(user);
 
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;                // Format the current date and time to ISO string
+        String isoDateString = now.format(formatter);
+
+        Message message = Message.builder()
+                .identityCode(room.getRoomCode())
+                .receiverCode(room.getRoomCode())
+                .senderName(room.getRoomName())
+                .content(user.getUsername() + " join the room.")
+                .status(Status.MESSAGE)
+                .toRoom(true)
+                .postedTime(isoDateString)
+                .build();
+        messageRepo.save(message);
+        simpMessagingTemplate.convertAndSend("/room/" + message.getReceiverCode(), message);
+
         roomRepo.save(room);
         userRepo.save(user);
     }
@@ -173,7 +167,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public void denyInvite(Long id) {
         // TODO Auto-generated method stub
         Notification notification = notificationRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Error"));
+                .orElseThrow(() -> new NotFoundException("Not found notification."));
 
         notification.setStatus(Status.DENY);
         notificationRepo.save(notification);

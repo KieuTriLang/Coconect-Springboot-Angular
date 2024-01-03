@@ -1,4 +1,4 @@
-<div class="chat-container">
+<div class="chat-container" [class.active-member-list]="isOpenedMemberList">
   <app-tab
     [tabs]="conversationService.tabs"
     [currentTab]="conversationService.currentTab"
@@ -16,6 +16,8 @@
           conversationService.currentTab
         )
       "
+      [tabSelected]="conversationService.currentTab"
+      [tabPersonal]="conversationService.tabPersonal"
       [userCode]="userCode"
       [userMess]="userMess"
     ></app-chat-message>
@@ -27,6 +29,7 @@
     [tabSelected]="conversationService.currentTab"
     [tabPersonal]="conversationService.tabPersonal"
   ></app-chatbar>
+  <app-member-list (hasData)="handleNotiFromMemberList($event)"></app-member-list>
   <div
     *ngIf="chatService.uploadError != null"
     class="noti-error"

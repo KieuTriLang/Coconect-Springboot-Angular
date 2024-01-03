@@ -14,6 +14,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './chat/interceptors/auth.interceptor';
 import { NotiItemComponent } from './chat/components/noti-item/noti-item.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { MemberListComponent } from './chat/components/member-list/member-list.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     ChatbarComponent,
     SafeHtmlPipe,
     NotiItemComponent,
+    MemberListComponent,
   ],
   imports: [
     BrowserModule,

@@ -9,7 +9,6 @@ import com.ktl.server.notification.Notification;
 
 public interface UserService {
 
-    void register(RegisterRequest registerRequest);
 
     AppUserDto getInfoUserByUserCode(String userCode);
 

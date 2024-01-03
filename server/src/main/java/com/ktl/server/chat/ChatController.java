@@ -1,5 +1,6 @@
 package com.ktl.server.chat;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -12,13 +13,13 @@ import com.ktl.server.user.UserService;
 import lombok.AllArgsConstructor;
 
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ChatController {
 
-    @Autowired
+
     private final MessageService messageService;
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @MessageMapping("/message")
     @SendTo("/chatroom/public")

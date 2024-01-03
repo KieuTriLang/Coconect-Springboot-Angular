@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
@@ -17,16 +18,15 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.common.net.HttpHeaders;
+import org.springframework.http.HttpHeaders;
 
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/media-file")
-@AllArgsConstructor
+@RequestMapping(value = "/api/v1/media-file")
+@RequiredArgsConstructor
 public class MediaFileController {
 
-    @Autowired
     private final MediaFileService mediaFileService;
 
     // FILE

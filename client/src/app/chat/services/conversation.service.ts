@@ -76,6 +76,26 @@ export class ConversationService {
     });
   }
 
+  reset() {
+    this.tabPersonal = false;
+    this.currentTab = 'public';
+    this.tabs = [
+      {
+        info: {
+          id: null,
+          conversationCode: 'public',
+          name: 'Public room',
+          unread: 0,
+          personal: false,
+        },
+        raw: false,
+        loadFirst: true,
+      },
+    ];
+
+    this.conversations = new Map<string, IUserMess[]>();
+  }
+
   createNewTab(newTab: ITab, raw: boolean, loadFirst: boolean) {
     if (
       this.tabs.filter(

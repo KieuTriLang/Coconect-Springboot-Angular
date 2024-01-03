@@ -1,3 +1,4 @@
 export interface JwtData {
-  access_token: string;
+  accessToken: string;
+  refreshToken: string;
 }

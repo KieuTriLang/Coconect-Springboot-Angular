@@ -2,6 +2,9 @@ package com.ktl.server.chat;
 
 import java.util.List;
 
+import com.ktl.server.exception.BadRequestException;
+import com.ktl.server.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,23 +14,18 @@ import com.ktl.server.user.UserRepo;
 import lombok.AllArgsConstructor;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
-    @Autowired
+
     private final MessageRepo messageRepo;
 
-    @Autowired
+
     private final UserRepo userRepo;
 
     @Override
     public Message saveMessage(Message message) {
-        try {
-            return messageRepo.save(message);
-        } catch (Exception exception) {
-            throw new RuntimeException(exception.getMessage());
-        }
-
+        return messageRepo.save(message);
     }
 
     @Override
@@ -39,7 +37,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public List<Message> getMessagesByUserCodeBeforeId(String username, String receiverCode, Long id) {
 
-        AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("Not found user"));
+        AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new NotFoundException("Not found user"));
 
         return messageRepo.findMessagesByUserCodeBeforeId(user.getUserCode(), receiverCode, id);
     }

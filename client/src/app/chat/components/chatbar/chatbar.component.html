@@ -9,7 +9,8 @@
     </div>
     <div class="attachment-list" [class.active]="attachmentOpen">
       <div class="attachment-item">
-        <label for="image">
+        <label for="image"
+        m-title="Image">
           <fa-icon [icon]="imageIcon" [size]="'1x'"></fa-icon
         ></label>
         <input
@@ -18,10 +19,11 @@
           id="image"
           accept="image/*"
           (change)="upload($event)"
+          [disabled]="!(chatService.connected$ |async)"
         />
       </div>
       <div class="attachment-item">
-        <label for="video">
+        <label for="video" m-title="Video">
           <fa-icon [icon]="videoIcon" [size]="'1x'"></fa-icon
         ></label>
         <input
@@ -30,6 +32,7 @@
           id="video"
           accept="video/*"
           (change)="upload($event)"
+          [disabled]="!(chatService.connected$ |async)"
         />
       </div>
     </div>

@@ -34,7 +34,7 @@ export class ChatbarComponent implements OnInit {
   countPress: number = 0;
   constructor(
     private fb: FormBuilder,
-    private chatService: ChatService,
+    public chatService: ChatService,
     private commandService: CommandService,
     private mediaFileService: MediaFileService,
     private messageService: MessageService
@@ -44,6 +44,25 @@ export class ChatbarComponent implements OnInit {
     this.form = this.fb.group({
       message: ['', [Validators.required]],
     });
+    this.commandService.sendCommandText$.subscribe({
+      next: value =>{
+        if(value != ''){
+          this.form.setValue({
+            message: `${value} ${this.form.value.message || ''}`
+          })
+        }
+      }
+    })
+    this.commandService.sendUserInfo$.subscribe({
+      next: value =>{
+        if(value != ''){
+          this.form.setValue({
+            message: `${this.form.value.message || ''} ${value}`
+          })
+        }
+      }
+    })
+    
   }
   typing() {
     if (this.countPress / 5 == 1) {
@@ -54,7 +73,7 @@ export class ChatbarComponent implements OnInit {
     }
   }
   submit() {
-    if (this.form.valid) {
+    if (this.form.valid && this.chatService.connected$) {
       const text = this.form.value.message;
       if (!this.commandService.notPrefixCommand(text)) {
         this.handleCommand(text);
@@ -68,13 +87,14 @@ export class ChatbarComponent implements OnInit {
   handleCommand(text: string) {
     const newText: string = this.commandService.removeAllPrefix(text);
     const nameList: string[] = this.getListStringFromText(newText);
-    const { createRoom, addMember, removeMember, leaveRoom } =
+    const { createRoom, addMember, removeMember, leaveRoom, memberList, promoteMember } =
       this.commandService.prefixCommandRegex;
 
     if (newText.length == 0 && !leaveRoom.regex.test(text)) {
       return;
     }
     switch (true) {
+      
       case createRoom.regex.test(text):
         createRoom.action({
           roomCode: '',
@@ -101,6 +121,21 @@ export class ChatbarComponent implements OnInit {
           roomCode: this.tabSelected,
           roomName: '',
           members: [],
+        });
+        break;
+      case memberList.regex.test(text) && this.tabSelected != 'public':
+        
+        memberList.action({
+          roomCode: this.tabSelected,
+          roomName: '',
+          members: [],
+        });
+        break;
+      case promoteMember.regex.test(text) && this.tabSelected != 'public' && nameList.length == 1:
+        promoteMember.action({
+          roomCode: this.tabSelected,
+          roomName: '',
+          members: nameList,
         });
         break;
       default:

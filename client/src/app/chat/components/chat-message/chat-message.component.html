@@ -2,12 +2,12 @@
   class="chat-message"
   [class.me]="userMess.identityCode == userCode"
   [attr.posted-time]="userMess.postedTime | date : 'shortTime'"
-  *ngIf="userMess"
+  *ngIf="userMess.identityCode!=tabSelected && !tabPersonal;else messToRoom;"
 >
-  <div class="username" (click)="openNewChat()">
+  <div *ngIf="userMess" class="username" (click)="addUserInfoToMessageInput()" (dblclick)="openNewChat()">
     <p>{{ userMess.username }}</p>
   </div>
-  <div class="content">
+  <div *ngIf="userMess" class="content">
     <div
       class="text"
       *ngFor="let message of userMess.messages"
@@ -15,3 +15,10 @@
     ></div>
   </div>
 </div>
+
+
+<ng-template #messToRoom>
+  <div class="mess-to-room" *ngFor="let message of userMess.messages">
+    <p>{{message.content}}</p>
+  </div>
+</ng-template>

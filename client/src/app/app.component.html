@@ -2,6 +2,12 @@
   <app-chat
     *ngIf="authService.authenticated$ | async; else loginTemp"
   ></app-chat>
+  <div class="command-list" *ngIf="authService.authenticated$ | async">
+    <p>Command</p>
+    <p class="command-item" *ngFor="let item of commandList" (click)="addCommandToMessageInput(item.value)">
+      {{item.name}}
+    </p>
+  </div>
   <button
     type="button"
     class="logout"

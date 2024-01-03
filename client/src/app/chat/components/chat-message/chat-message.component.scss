@@ -45,6 +45,7 @@
       background: rgba($color-8, 0.5);
       border-radius: 5px;
       display: flex;
+      flex-flow: row wrap;
       align-items: center;
       gap: 3px;
       &:not(:last-of-type) {
@@ -197,4 +198,9 @@
       }
     }
   }
+}
+.mess-to-room{
+  text-align: center;
+  font-style: italic;
+  font-size: 1.2rem;
 }

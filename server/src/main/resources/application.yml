@@ -1,0 +1,43 @@
+#
+#server.port=8080
+#spring.
+#spring.datasource.url = jdbc:mysql://localhost:3306/coconect
+#spring.datasource.username = root
+#spring.datasource.password = 1234
+#
+#spring.servlet.multipart.max-file-size=400MB
+#spring.servlet.multipart.max-request-size=400MB
+#
+## spring.jpa.hibernate.ddl-auto = none
+#spring.jpa.show-sql=true
+#spring.jpa.hibernate.ddl-auto = none
+#spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL8Dialect
+#
+#
+#app.jwt.secretKey = coconectktl
+#app.jwt.tokenPrefix = Bearer
+#app.jwt.tokenExperationAfterDays = 14
+
+spring:
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 400MB
+      max-request-size: 400MB
+  jpa:
+    hibernate:
+      ddl-auto: none
+#server:
+#  error:
+#    include-message: always
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  expired-after-minute:
+    #     7 days
+    access-token: ${JWT_ACCESS_EXPIRED_AFTER_MINUTE:10080}
+    #    7 days
+    refresh-token: ${JWT_REFRESH_EXPIRED_AFTER_MINUTE:10080}
