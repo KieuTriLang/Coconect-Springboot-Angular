@@ -4,8 +4,13 @@
   [attr.posted-time]="userMess.postedTime | date : 'shortTime'"
   *ngIf="userMess.identityCode!=tabSelected && !tabPersonal;else messToRoom;"
 >
-  <div *ngIf="userMess" class="username" (click)="addUserInfoToMessageInput()" (dblclick)="openNewChat()">
-    <p>{{ userMess.username }}</p>
+  <div *ngIf="userMess" class="username"  >
+    <p (click)="isOpenAction = !isOpenAction">{{ userMess.username }}</p>
+    <div class="actions" [class.active]="isOpenAction">
+      <p class="open-private" (click)="openNewChat()" >Open private chat</p>
+      <div class="line"></div>
+      <p class="use-with-command" (click)="addUserInfoToMessageInput()">Use with command</p>
+    </div>
   </div>
   <div *ngIf="userMess" class="content">
     <div

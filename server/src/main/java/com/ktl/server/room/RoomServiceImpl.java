@@ -87,11 +87,12 @@ public class RoomServiceImpl implements RoomService {
     public List<MemberInfo> getRoomMembers(String roomCode) {
         Room room = roomRepo.findByRoomCode(roomCode).orElseThrow(()->new NotFoundException("Not found room"));
         List<MemberInfo> result = new ArrayList<>();
-        List<String> usernames = roomRepo.findUsernamesByRoomCode(roomCode);
-        usernames.forEach(username -> {
+        List<AppUser> users = roomRepo.findUsernamesByRoomCode(roomCode);
+        users.forEach(user -> {
             MemberInfo memberInfo = MemberInfo.builder()
-                    .username(username)
-                    .isMaster(room.getCreator().equals(username))
+                    .username(user.getUsername())
+                    .userCode(user.getUserCode())
+                    .isMaster(room.getCreator().equals(user.getUsername()))
                     .build();
             result.add(memberInfo);
         });

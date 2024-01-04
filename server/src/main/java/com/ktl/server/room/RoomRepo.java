@@ -3,6 +3,7 @@ package com.ktl.server.room;
 import java.util.List;
 import java.util.Optional;
 
+import com.ktl.server.user.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +16,6 @@ public interface RoomRepo extends JpaRepository<Room, Long> {
 
     boolean existsByMembers_Username(String username);
 
-    @Query("SELECT DISTINCT u.username FROM Room r JOIN r.members u WHERE r.roomCode = :roomCode")
-    List<String> findUsernamesByRoomCode(@Param("roomCode") String roomCode);
+    @Query("SELECT DISTINCT u FROM Room r JOIN r.members u WHERE r.roomCode = :roomCode")
+    List<AppUser> findUsernamesByRoomCode(@Param("roomCode") String roomCode);
 }

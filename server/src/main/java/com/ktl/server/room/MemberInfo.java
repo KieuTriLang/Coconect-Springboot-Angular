@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class MemberInfo {
 
     private String username;
+    private String userCode;
 
     private boolean isMaster;
 }

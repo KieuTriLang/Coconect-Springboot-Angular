@@ -13,7 +13,6 @@ import { ChatService } from '../../services/chat.service';
 })
 export class MemberListComponent implements OnInit {
 
-  iconCrown = faCrown;
   authName !: string;
   memberInfos : MemberInfo [] = [];
 

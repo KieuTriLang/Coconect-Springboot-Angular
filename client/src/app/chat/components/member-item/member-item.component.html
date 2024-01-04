@@ -1,0 +1,14 @@
+<div class="member" [class.active]="isOpenAction && member.username != authName">
+  <div class="username" [class.me]="member.username == authName" (click)="isOpenAction = !isOpenAction">
+    <span>{{ member.username }}</span
+    ><fa-icon *ngIf="member.master" [icon]="iconCrown" [size]="'1x'"></fa-icon>
+  </div>
+
+  <div class="actions" [class.active]="isOpenAction" *ngIf="member.username != authName">
+    <p class="open-private" (click)="openNewChat()">Open private chat</p>
+    <div class="line"></div>
+    <p class="use-with-command" (click)="addUserInfoToMessageInput()">
+      Use with command
+    </p>
+  </div>
+</div>

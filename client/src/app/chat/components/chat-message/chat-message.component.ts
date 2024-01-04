@@ -23,6 +23,7 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
   @Input() tabSelected!: string;
   @Input() tabPersonal!: boolean;
 
+  isOpenAction:boolean = false;
   mColors: any;
   mMedias: any;
   constructor(

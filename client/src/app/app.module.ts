@@ -15,6 +15,7 @@ import { AuthInterceptor } from './chat/interceptors/auth.interceptor';
 import { NotiItemComponent } from './chat/components/noti-item/noti-item.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MemberListComponent } from './chat/components/member-list/member-list.component';
+import { MemberItemComponent } from './chat/components/member-item/member-item.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { MemberListComponent } from './chat/components/member-list/member-list.c
     SafeHtmlPipe,
     NotiItemComponent,
     MemberListComponent,
+    MemberItemComponent,
   ],
   imports: [
     BrowserModule,
