@@ -1,8 +1,8 @@
 <div
   class="chat-message"
   [class.me]="userMess.identityCode == userCode"
-  [attr.posted-time]="userMess.postedTime | date : 'shortTime'"
-  *ngIf="userMess.identityCode!=tabSelected && !tabPersonal;else messToRoom;"
+  [attr.posted-time]="userMess.postedTime | date : 'dd/MM/yyyy hh:mm'"
+  *ngIf="userMess.identityCode!=tabSelected || (tabPersonal && !userMess.toRoom);else messToRoom;"
 >
   <div *ngIf="userMess" class="username"  >
     <p (click)="isOpenAction = !isOpenAction">{{ userMess.username }}</p>

@@ -56,4 +56,7 @@ export class NotificationService {
       this.notiKick.next(noti.roomCode);
     }
   }
+  reset(){
+    this.notiList = [];
+  }
 }

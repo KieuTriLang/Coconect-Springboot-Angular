@@ -7,4 +7,5 @@ export interface IUserMess {
   username: string;
   messages: IMessage[];
   postedTime: string;
+  toRoom: boolean
 }

@@ -11,43 +11,60 @@ import {
   ViewChild,
   OnDestroy,
 } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss'],
 })
-export class ChatComponent implements OnInit, AfterViewChecked {
+export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('messageContainer') messC!: ElementRef;
   userCode: string = '';
   scrolling: boolean = false;
   isOpenedMemberList: boolean = false;
+  subscriptions: Subscription[] = [];
   constructor(
     public chatService: ChatService,
     private authService: AuthService,
     private userService: UserService,
     public conversationService: ConversationService
-  ) {
-    this.chatService.newMessage$.subscribe((message) =>
-      this.handleNewMessage(message)
-    );
+  ) {}
+  ngOnDestroy(): void {
+    this.subscriptions.map(sub => sub.unsubscribe());
+    this.subscriptions = [];
   }
 
   ngAfterViewChecked(): void {}
 
   ngOnInit(): void {
-    this.authService.authenticated$.subscribe((val) => {
-      if (val) {
-        this.init();
-      } else {
-        this.reset();
-      }
-    });
-    this.chatService.scrollToBottom$.subscribe((val) => {
-      if (val) {
-        this.scrollToBottom();
-      }
-    });
+    this.addNewSubscription(
+      this.chatService.newMessage$.subscribe((message) => {
+        this.handleNewMessage(message);
+      })
+    );
+    this.addNewSubscription(
+      this.authService.authenticated$.subscribe({
+        next: (val) => {
+          if (val) {
+            this.init();
+          } else {
+            this.reset();
+          }
+        },
+      })
+    );
+    this.addNewSubscription(
+      this.chatService.scrollToBottom$.subscribe((val) => {
+        if (val) {
+          this.scrollToBottom();
+        }
+      })
+    );
+  }
+
+  addNewSubscription(subscription: Subscription) {
+    this.subscriptions = [...this.subscriptions, subscription];
   }
   init() {
     this.userService.getInfo().subscribe({
@@ -78,10 +95,15 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   handleTabChanged(conversationCode: string) {
     this.scrolling = false;
-    if(conversationCode == 'public'){
-      this.isOpenedMemberList= false;
+    if (conversationCode == 'public') {
+      this.isOpenedMemberList = false;
     }
     this.conversationService.changeTab(conversationCode);
+  }
+
+  handleCloseMemberList(value: boolean) {
+    if (!value) return;
+    this.isOpenedMemberList = false;
   }
 
   scrollToBottom() {

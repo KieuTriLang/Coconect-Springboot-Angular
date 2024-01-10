@@ -72,25 +72,34 @@ export class ChatService {
   };
 
   onConnected = () => {
-    this.stompClient.subscribe('/chatroom/public', this.onMessageReceived);
-    this.stompClient.subscribe(
+    this.addSubscription('public',this.stompClient.subscribe('/chatroom/public', this.onMessageReceived));
+    this.addSubscription(this.userData.identityCode,this.stompClient.subscribe(
       '/user/' + this.userData.identityCode + '/private',
       this.onPrivateReceived
-    );
+    ));
     this.connected.next(true);
   };
 
-  subscribeRoom(roomCode: string) {
-    this.roomSubscriptions = [
-      ...this.roomSubscriptions,
-      {
-        roomCode: roomCode,
-        subscription: this.stompClient.subscribe(
-          `/room/${roomCode}`,
-          this.onMessageReceived
-        ),
-      },
-    ];
+  addSubscription(roomCode:string,subscription : Subscription){
+    var existedSub :boolean = false;
+    this.roomSubscriptions = this.roomSubscriptions.map(sub =>{
+      if(sub.roomCode == roomCode){
+        sub.subscription.unsubscribe();
+        sub.subscription = subscription;
+        existedSub = true;
+      }
+      return sub;
+    })
+    
+    if(!existedSub){
+      this.roomSubscriptions = [...this.roomSubscriptions,{roomCode:roomCode,subscription:subscription}]
+    }
+  }
+  createSubscriptionRoom(roomCode: string) : Subscription {
+    return  this.stompClient.subscribe(
+      `/room/${roomCode}`,
+      this.onMessageReceived
+    )
   }
   unsubscribeRoom(roomCode: string) {
     this.roomSubscriptions = this.roomSubscriptions.filter(
@@ -102,6 +111,13 @@ export class ChatService {
         return roomSubscription;
       }
     );
+  }
+  unsubscribeAll(){
+    this.roomSubscriptions.map(sub =>{
+      sub.subscription.unsubscribe();
+    })
+    this.stompClient.disconnect(() =>{})
+    this.roomSubscriptions = [];
   }
 
   onError = (error: any) => {
@@ -135,6 +151,14 @@ export class ChatService {
     var payloadData: IChatMessage = JSON.parse(payload.body);
     switch (payloadData.status) {
       case 'NOTI':
+        this.uploadError = {
+          type: NotiType['danger'],
+          content: payloadData.content,
+          roomCode: '',
+          roomName: '',
+          time: '',
+          status: '',
+        }
         break;
       case 'JOIN':
         break;

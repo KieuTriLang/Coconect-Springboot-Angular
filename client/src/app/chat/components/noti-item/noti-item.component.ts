@@ -44,6 +44,7 @@ export class NotiItemComponent implements OnInit {
             personal: false,
           },
           false,
+          false,
           false
         );
         let notiList = this.notificationService.notiList;

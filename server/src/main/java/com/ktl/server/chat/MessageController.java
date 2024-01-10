@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.ktl.server.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/messages")
 @RequiredArgsConstructor
+@Slf4j
 public class MessageController {
 
     private final MessageService messageService;
@@ -48,9 +50,10 @@ public class MessageController {
         String username = jwtService.extractUsername(authHeader.replace("Bearer ",""));
         List<Message> messages;
         if (id > 0) {
-
+            log.info("with id");
             messages = messageService.getMessagesByUserCodeBeforeId(username, receiverCode, id);
         } else {
+            log.info("no id");
             messages = messageService.getMessagesByUserCodeBegin(username, receiverCode);
         }
         // Collections.reverse(messages);

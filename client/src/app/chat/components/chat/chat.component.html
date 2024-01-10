@@ -29,7 +29,7 @@
     [tabSelected]="conversationService.currentTab"
     [tabPersonal]="conversationService.tabPersonal"
   ></app-chatbar>
-  <app-member-list (hasData)="handleNotiFromMemberList($event)"></app-member-list>
+  <app-member-list (hasData)="handleNotiFromMemberList($event)" (closeMemberList)="handleCloseMemberList($event)"></app-member-list>
   <div
     *ngIf="chatService.uploadError != null"
     class="noti-error"

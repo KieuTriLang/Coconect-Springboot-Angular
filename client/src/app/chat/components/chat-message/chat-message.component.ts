@@ -22,7 +22,6 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
   @Input() userMess!: IUserMess;
   @Input() tabSelected!: string;
   @Input() tabPersonal!: boolean;
-
   isOpenAction:boolean = false;
   mColors: any;
   mMedias: any;
@@ -97,7 +96,8 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
     return "#" + this.componentToHex(red) + this.componentToHex(green) + this.componentToHex(blue);
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void { 
+  }
 
   openNewChat() {
     this.conversationService.createNewTab(
@@ -108,6 +108,7 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
         unread: 0,
         personal: true,
       },
+      true,
       true,
       true
     );

@@ -8,6 +8,7 @@
   &.active {
     border: 1px solid rgba($color-1, 1);
     & .username {
+      font-weight: 700;
       background: linear-gradient(
         60deg,
         rgba($color-5, 0.25),

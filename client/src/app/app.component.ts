@@ -58,6 +58,7 @@ export class AppComponent implements OnInit {
   }
   ngOnInit(): void {
     this.commandList = Object.values(this.commandService.prefixCommandRegex);
+    this.authService.authenticated$.subscribe({next: value =>{if(!value) this.notificationService.reset()}})
   }
   login() {
     if (this.loginForm.valid) {

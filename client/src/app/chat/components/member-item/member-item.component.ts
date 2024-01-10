@@ -28,6 +28,7 @@ export class MemberItemComponent implements OnInit {
         personal: true,
       },
       true,
+      true,
       true
     );
   }

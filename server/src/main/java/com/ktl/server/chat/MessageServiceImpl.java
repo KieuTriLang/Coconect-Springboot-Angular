@@ -50,8 +50,10 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<Message> getMessagesByUserCodeBegin(String username, String receiverCode) {
+
+        AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new NotFoundException("Not found user"));
         // TODO Auto-generated method stub
-        return messageRepo.findMessagesByUserCodeBegin(receiverCode, receiverCode);
+        return messageRepo.findMessagesByUserCodeBegin(user.getUserCode(), receiverCode);
     }
 
 }

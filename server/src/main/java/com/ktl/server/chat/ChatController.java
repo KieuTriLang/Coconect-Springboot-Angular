@@ -2,6 +2,7 @@ package com.ktl.server.chat;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -11,6 +12,11 @@ import org.springframework.stereotype.Controller;
 import com.ktl.server.user.UserService;
 
 import lombok.AllArgsConstructor;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
+import org.springframework.web.socket.messaging.SessionConnectedEvent;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 @Controller
 @RequiredArgsConstructor
@@ -50,4 +56,5 @@ public class ChatController {
         simpMessagingTemplate.convertAndSend("/room/" + mess.getReceiverCode(), mess);
         return mess;
     }
+
 }

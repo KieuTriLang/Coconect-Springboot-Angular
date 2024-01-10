@@ -7,12 +7,12 @@ export class StorageService {
   constructor() {}
 
   public getTokenFromLocal(key: string): string {
-    return localStorage.getItem(key) || '';
+    return sessionStorage.getItem(key) || '';
   }
   public saveTokenToLocal(key: string, value: string) {
-    localStorage.setItem(key, value);
+    sessionStorage.setItem(key, value);
   }
   public removeTokenToLocal(key: string) {
-    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
   }
 }

@@ -3,6 +3,7 @@
     class="tab-item"
     *ngFor="let tab of tabs"
     [class.active]="tab.info.conversationCode == currentTab"
+    [class.group]="!tab.info.personal && tab.info.conversationCode!='public'"
     (click)="changeTab(tab.info.conversationCode)"
   >
     {{ tab.info.name }}

@@ -17,6 +17,7 @@ export class MemberListComponent implements OnInit {
   memberInfos : MemberInfo [] = [];
 
   @Output() hasData = new EventEmitter<boolean>();
+  @Output() closeMemberList = new EventEmitter<boolean>();
 
   constructor(private commandService: CommandService,private chatService:ChatService) { }
 
@@ -39,5 +40,7 @@ export class MemberListComponent implements OnInit {
     }
     this.commandService.sendUserInfo.next(username);
   }
-
+  closeList(){
+    this.closeMemberList.emit(true);
+  }
 }
